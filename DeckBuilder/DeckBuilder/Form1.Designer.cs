@@ -29,17 +29,22 @@
 		private void InitializeComponent()
 		{
 			this.CardDatabaseGB = new System.Windows.Forms.GroupBox();
-			this.DeckBuilderGB = new System.Windows.Forms.GroupBox();
-			this.CardList = new System.Windows.Forms.ListBox();
-			this.DeckList = new System.Windows.Forms.ListBox();
 			this.CardOptionGB = new System.Windows.Forms.GroupBox();
+			this.CardList = new System.Windows.Forms.ListBox();
+			this.DeckBuilderGB = new System.Windows.Forms.GroupBox();
 			this.DeckOptionGB = new System.Windows.Forms.GroupBox();
+			this.DeckList = new System.Windows.Forms.ListBox();
+			this.ListCardImgGB = new System.Windows.Forms.GroupBox();
+			this.DeckCardImgGB = new System.Windows.Forms.GroupBox();
+			this.CrawlingBrowser = new System.Windows.Forms.WebBrowser();
 			this.CardDatabaseGB.SuspendLayout();
 			this.DeckBuilderGB.SuspendLayout();
+			this.ListCardImgGB.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// CardDatabaseGB
 			// 
+			this.CardDatabaseGB.Controls.Add(this.ListCardImgGB);
 			this.CardDatabaseGB.Controls.Add(this.CardOptionGB);
 			this.CardDatabaseGB.Controls.Add(this.CardList);
 			this.CardDatabaseGB.Location = new System.Drawing.Point(12, 12);
@@ -48,35 +53,6 @@
 			this.CardDatabaseGB.TabIndex = 0;
 			this.CardDatabaseGB.TabStop = false;
 			this.CardDatabaseGB.Text = "Card Database";
-			// 
-			// DeckBuilderGB
-			// 
-			this.DeckBuilderGB.Controls.Add(this.DeckOptionGB);
-			this.DeckBuilderGB.Controls.Add(this.DeckList);
-			this.DeckBuilderGB.Location = new System.Drawing.Point(409, 12);
-			this.DeckBuilderGB.Name = "DeckBuilderGB";
-			this.DeckBuilderGB.Size = new System.Drawing.Size(380, 426);
-			this.DeckBuilderGB.TabIndex = 1;
-			this.DeckBuilderGB.TabStop = false;
-			this.DeckBuilderGB.Text = "Deck Builder";
-			// 
-			// CardList
-			// 
-			this.CardList.FormattingEnabled = true;
-			this.CardList.ItemHeight = 15;
-			this.CardList.Location = new System.Drawing.Point(6, 24);
-			this.CardList.Name = "CardList";
-			this.CardList.Size = new System.Drawing.Size(180, 394);
-			this.CardList.TabIndex = 0;
-			// 
-			// DeckList
-			// 
-			this.DeckList.FormattingEnabled = true;
-			this.DeckList.ItemHeight = 15;
-			this.DeckList.Location = new System.Drawing.Point(6, 24);
-			this.DeckList.Name = "DeckList";
-			this.DeckList.Size = new System.Drawing.Size(180, 394);
-			this.DeckList.TabIndex = 0;
 			// 
 			// CardOptionGB
 			// 
@@ -87,6 +63,27 @@
 			this.CardOptionGB.TabStop = false;
 			this.CardOptionGB.Text = "Option";
 			// 
+			// CardList
+			// 
+			this.CardList.FormattingEnabled = true;
+			this.CardList.ItemHeight = 15;
+			this.CardList.Location = new System.Drawing.Point(6, 24);
+			this.CardList.Name = "CardList";
+			this.CardList.Size = new System.Drawing.Size(180, 394);
+			this.CardList.TabIndex = 0;
+			// 
+			// DeckBuilderGB
+			// 
+			this.DeckBuilderGB.Controls.Add(this.DeckCardImgGB);
+			this.DeckBuilderGB.Controls.Add(this.DeckOptionGB);
+			this.DeckBuilderGB.Controls.Add(this.DeckList);
+			this.DeckBuilderGB.Location = new System.Drawing.Point(409, 12);
+			this.DeckBuilderGB.Name = "DeckBuilderGB";
+			this.DeckBuilderGB.Size = new System.Drawing.Size(380, 426);
+			this.DeckBuilderGB.TabIndex = 1;
+			this.DeckBuilderGB.TabStop = false;
+			this.DeckBuilderGB.Text = "Deck Builder";
+			// 
 			// DeckOptionGB
 			// 
 			this.DeckOptionGB.Location = new System.Drawing.Point(192, 24);
@@ -95,6 +92,44 @@
 			this.DeckOptionGB.TabIndex = 1;
 			this.DeckOptionGB.TabStop = false;
 			this.DeckOptionGB.Text = "Option";
+			// 
+			// DeckList
+			// 
+			this.DeckList.FormattingEnabled = true;
+			this.DeckList.ItemHeight = 15;
+			this.DeckList.Location = new System.Drawing.Point(6, 24);
+			this.DeckList.Name = "DeckList";
+			this.DeckList.Size = new System.Drawing.Size(180, 394);
+			this.DeckList.TabIndex = 0;
+			// 
+			// ListCardImgGB
+			// 
+			this.ListCardImgGB.Controls.Add(this.CrawlingBrowser);
+			this.ListCardImgGB.Location = new System.Drawing.Point(192, 136);
+			this.ListCardImgGB.Name = "ListCardImgGB";
+			this.ListCardImgGB.Size = new System.Drawing.Size(182, 282);
+			this.ListCardImgGB.TabIndex = 2;
+			this.ListCardImgGB.TabStop = false;
+			this.ListCardImgGB.Text = "Card Image";
+			// 
+			// DeckCardImgGB
+			// 
+			this.DeckCardImgGB.Location = new System.Drawing.Point(192, 136);
+			this.DeckCardImgGB.Name = "DeckCardImgGB";
+			this.DeckCardImgGB.Size = new System.Drawing.Size(182, 282);
+			this.DeckCardImgGB.TabIndex = 2;
+			this.DeckCardImgGB.TabStop = false;
+			this.DeckCardImgGB.Text = "Card Image";
+			// 
+			// CrawlingBrowser
+			// 
+			this.CrawlingBrowser.Location = new System.Drawing.Point(6, 24);
+			this.CrawlingBrowser.MinimumSize = new System.Drawing.Size(20, 20);
+			this.CrawlingBrowser.Name = "CrawlingBrowser";
+			this.CrawlingBrowser.Size = new System.Drawing.Size(170, 252);
+			this.CrawlingBrowser.TabIndex = 2;
+			this.CrawlingBrowser.Visible = false;
+			this.CrawlingBrowser.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.CrawlingBrowser_DocumentCompleted);
 			// 
 			// DeckBuilder
 			// 
@@ -107,6 +142,7 @@
 			this.Text = "MTG Deck Builder";
 			this.CardDatabaseGB.ResumeLayout(false);
 			this.DeckBuilderGB.ResumeLayout(false);
+			this.ListCardImgGB.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -119,6 +155,9 @@
 		private System.Windows.Forms.ListBox CardList;
 		private System.Windows.Forms.GroupBox DeckOptionGB;
 		private System.Windows.Forms.ListBox DeckList;
+		private System.Windows.Forms.GroupBox ListCardImgGB;
+		private System.Windows.Forms.GroupBox DeckCardImgGB;
+		private System.Windows.Forms.WebBrowser CrawlingBrowser;
 	}
 }
 
