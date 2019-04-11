@@ -64,15 +64,17 @@ namespace DeckBuilder
 			return browser.Document;
 		}
 
-	static public CardData MakeCardData(HtmlDocument document)
+	static public CardData MakeCardData(HtmlDocument document, String cardID)
 		{
 			if (Directory.Exists(m_imageDir) == false)
 				Directory.CreateDirectory(m_imageDir);
 
 			CardData card = new CardData();
+			card.SetCardID(cardID);
 
 			GetCardText(in document, ref card);
-			GetCardImage(in document, ref card);
+			DownLoadCardImage(ref card);
+			//GetCardImage(in document, ref card);
 
 			return card;
 		}
@@ -146,24 +148,18 @@ namespace DeckBuilder
 
 		private static bool GetCardImage(in HtmlDocument document, ref CardData card)
 		{
-			HtmlElementCollection dataList = document.GetElementsByTagName("img");
-			foreach (HtmlElement cardElement in dataList)
-			{
-				if (cardElement.GetAttribute("alt") == card.GetCardName())
-				{
-					String imgUrl = cardElement.GetAttribute("src");
-					DownLoadCardImage(imgUrl.ToString(), ref card);
-
-					break;
-				}
-			}
+			DownLoadCardImage(ref card);
 
 			return true;
 		}
 
-		private static void DownLoadCardImage(String imgUrl, ref CardData card)
+		private static void DownLoadCardImage(ref CardData card)
 		{
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(imgUrl);
+			StringBuilder url = new StringBuilder("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=");
+			url.Append(card.GetCardID());
+			url.Append("&type=card");
+
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url.ToString());
 			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 			bool bImage = response.ContentType.StartsWith("image", StringComparison.OrdinalIgnoreCase);
 			if ((response.StatusCode == HttpStatusCode.OK ||

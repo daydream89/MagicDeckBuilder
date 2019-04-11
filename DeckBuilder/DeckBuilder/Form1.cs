@@ -41,7 +41,7 @@ namespace DeckBuilder
 			String url = WebLibrary.MakeURL(cardID);
 			HtmlDocument doc = WebLibrary.GetHTMLDocumentByURL(url);
 
-			CardData card = WebLibrary.MakeCardData(doc);
+			CardData card = WebLibrary.MakeCardData(doc, cardID);
 			m_CardList.Add(card.GetCardName(), card);
 		}
 	}

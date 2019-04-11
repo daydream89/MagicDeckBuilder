@@ -47,6 +47,7 @@ namespace DeckBuilder
 
 	class CardData
 	{
+		private String cardID;
 		private String cardName;
 		private int[] manaCost;
 		private int convertedManaCost;
@@ -58,6 +59,7 @@ namespace DeckBuilder
 
 		public CardData()
 		{
+			cardID = "";
 			cardName = "";
 			manaCost = new int[(int)ManaType.MANA_TYPE_MAX];
 			convertedManaCost = 0;
@@ -76,6 +78,9 @@ namespace DeckBuilder
 		{
 			
 		}
+
+		public void SetCardID(string id) { cardID = id; }
+		public string GetCardID() { return cardID; }
 
 		public void SetCardName(string name) { cardName = name; }
 		public string GetCardName() { return cardName; }
