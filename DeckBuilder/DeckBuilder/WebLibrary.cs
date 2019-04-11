@@ -25,18 +25,46 @@ namespace DeckBuilder
 
 		private const String m_imageDir = "CardData\\Images\\";
 
-		static public Uri MakeURL(string cardID)
+		static public String MakeURL(string cardID)
 		{
 			StringBuilder urlStr = new StringBuilder();
 			urlStr.Clear();
 			urlStr.Append("http://gatherer.wizards.com/Pages/Card/Details.aspx?printed=true&multiverseid=");
 			urlStr.Append(cardID);
-			Uri uri = new Uri(urlStr.ToString());
 
-			return uri;
+			return urlStr.ToString();
 		}
 
-		static public CardData MakeCardData(HtmlDocument document)
+		static public HtmlDocument GetHTMLDocumentByURL(String url, String encoder = "")
+		{
+			HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(url);
+			HttpWebResponse webResp = (HttpWebResponse)webReq.GetResponse();
+
+			TextReader reader;
+			if (encoder == "")
+				reader = (TextReader)new StreamReader(webResp.GetResponseStream());
+			else
+				reader = (TextReader)new StreamReader(webResp.GetResponseStream(), Encoding.GetEncoding(encoder));
+
+			String html = reader.ReadToEnd();
+			HtmlDocument doc = GetHTMLDocumentByHTML(html);
+
+			return doc;
+		}
+
+		static public HtmlDocument GetHTMLDocumentByHTML(String html)
+		{
+			WebBrowser browser = new WebBrowser();
+			browser.ScriptErrorsSuppressed = true;
+			browser.DocumentText = html;
+			browser.Document.OpenNew(true);
+			browser.Document.Write(html);
+			browser.Refresh();
+
+			return browser.Document;
+		}
+
+	static public CardData MakeCardData(HtmlDocument document)
 		{
 			if (Directory.Exists(m_imageDir) == false)
 				Directory.CreateDirectory(m_imageDir);

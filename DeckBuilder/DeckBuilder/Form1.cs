@@ -38,18 +38,11 @@ namespace DeckBuilder
 		{
 			// todo. id generate & loop later
 			String cardID = m_cardSetIdPair["core set 2019"].ToString() + "907";
-			Uri uri = WebLibrary.MakeURL(cardID);
+			String url = WebLibrary.MakeURL(cardID);
+			HtmlDocument doc = WebLibrary.GetHTMLDocumentByURL(url);
 
-			CrawlingBrowser.Navigate(uri.AbsoluteUri);
+			CardData card = WebLibrary.MakeCardData(doc);
+			m_CardList.Add(card.GetCardName(), card);
 		}
-
-		private void CrawlingBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
-		{
-			if (e.Url.AbsoluteUri == CrawlingBrowser.Url.AbsoluteUri)
-			{
-				CardData card = WebLibrary.MakeCardData(CrawlingBrowser.Document);
-				m_CardList.Add(card.GetCardName(), card);
-			}
-		}
-}
+	}
 }
