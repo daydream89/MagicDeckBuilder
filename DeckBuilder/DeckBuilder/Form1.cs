@@ -30,8 +30,6 @@ namespace DeckBuilder
 				Directory.CreateDirectory(m_cardDataDir);
 
 			m_CardList = new Dictionary<String, CardData>();
-
-			CrawlingCard();
 		}
 
 		public void CrawlingCard()
@@ -43,6 +41,17 @@ namespace DeckBuilder
 
 			CardData card = WebLibrary.MakeCardData(doc, cardID);
 			m_CardList.Add(card.GetCardName(), card);
+		}
+
+		private void CrawlingCardBtn_Click(object sender, EventArgs e)
+		{
+			CrawlingCard();
+		}
+
+		private void RefreshListBtn_Click(object sender, EventArgs e)
+		{
+			foreach(KeyValuePair<String, CardData> card in m_CardList)
+				CardListBox.Items.Add(card.Key);
 		}
 	}
 }
