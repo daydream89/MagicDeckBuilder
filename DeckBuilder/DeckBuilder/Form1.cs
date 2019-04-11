@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,22 +13,31 @@ namespace DeckBuilder
 {
 	public partial class DeckBuilder : Form
 	{
-		private Dictionary<string, int> m_cardSetIdPair;
+		private const String m_cardDataDir = "CardData\\";
+
+		private Dictionary<String, int> m_cardSetIdPair;
+		private Dictionary<String, CardData> m_CardList;
 
 		public DeckBuilder()
 		{
 			InitializeComponent();
 
 			// need change this file read later.
-			m_cardSetIdPair = new Dictionary<string, int>{ { "ixalan", 436 }, { "rivals of ixalan", 441 }, { "dominaria", 444 },
+			m_cardSetIdPair = new Dictionary<String, int>{ { "ixalan", 436 }, { "rivals of ixalan", 441 }, { "dominaria", 444 },
 														   { "core set 2019", 448 }, { "guild of ravnica", 454 }, { "ravnica allegiance", 458 } };
+
+			if (Directory.Exists(m_cardDataDir) == false)
+				Directory.CreateDirectory(m_cardDataDir);
+
+			m_CardList = new Dictionary<String, CardData>();
 
 			CrawlingCard();
 		}
 
 		public void CrawlingCard()
 		{
-			string cardID = m_cardSetIdPair["core set 2019"].ToString() + "907";
+			// todo. id generate & loop later
+			String cardID = m_cardSetIdPair["core set 2019"].ToString() + "907";
 			Uri uri = WebLibrary.MakeURL(cardID);
 
 			CrawlingBrowser.Navigate(uri.AbsoluteUri);
@@ -38,8 +48,7 @@ namespace DeckBuilder
 			if (e.Url.AbsoluteUri == CrawlingBrowser.Url.AbsoluteUri)
 			{
 				CardData card = WebLibrary.MakeCardData(CrawlingBrowser.Document);
-
-				//Output(db);
+				m_CardList.Add(card.GetCardName(), card);
 			}
 		}
 }

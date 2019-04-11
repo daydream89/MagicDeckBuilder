@@ -1,52 +1,86 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DeckBuilder
 {
-	class WebLibrary
+	class WebLibrary : IDisposable
 	{
+		private enum eCardElement
+		{
+			ELEMENT_NONE = 0,
+			ELEMENT_CARD_NAME,
+			ELEMENT_COST,
+			ELEMENT_CMC,
+			ELEMENT_TYPE,
+			ELEMENT_TEXT,
+			ELEMENT_EXPANSION,
+			ELEMENT_RARITY,
+		}
+
+		private const String m_imageDir = "CardData\\Images\\";
+
 		static public Uri MakeURL(string cardID)
 		{
-			Uri uri = new Uri("http://gatherer.wizards.com/Pages/Card/Details.aspx?printed=true&multiverseid=" + cardID);
+			StringBuilder urlStr = new StringBuilder();
+			urlStr.Clear();
+			urlStr.Append("http://gatherer.wizards.com/Pages/Card/Details.aspx?printed=true&multiverseid=");
+			urlStr.Append(cardID);
+			Uri uri = new Uri(urlStr.ToString());
+
 			return uri;
 		}
 
 		static public CardData MakeCardData(HtmlDocument document)
 		{
-			// todo. need refactoring with better way
-			// why do i using enum?
-			bool isCardName = false;
-			bool isManaCost = false;
-			bool isCMC = false;
-			bool isType = false;
-			bool isCardText = false;
-			bool isExpansion = false;
-			bool isRarity = false;
+			if (Directory.Exists(m_imageDir) == false)
+				Directory.CreateDirectory(m_imageDir);
 
 			CardData card = new CardData();
+
+			GetCardText(in document, ref card);
+			GetCardImage(in document, ref card);
+
+			return card;
+		}
+
+		private static bool GetCardText(in HtmlDocument document, ref CardData card)
+		{
+			eCardElement elementType = eCardElement.ELEMENT_NONE;
 
 			HtmlElementCollection dataList = document.GetElementsByTagName("div");
 			foreach (HtmlElement cardElement in dataList)
 			{
-				if (isCardName == true)
-				{
+				if (elementType == eCardElement.ELEMENT_CARD_NAME)
 					card.SetCardName(cardElement.InnerText);
-					isCardName = false;
+				else if (elementType == eCardElement.ELEMENT_CMC)
+					card.SetCMC(cardElement.InnerText);
+				else if (elementType == eCardElement.ELEMENT_TYPE)
+					card.SetType(cardElement.InnerText);
+				else if (elementType == eCardElement.ELEMENT_TEXT)
+					card.SetText(cardElement.InnerText);
+				else if (elementType == eCardElement.ELEMENT_EXPANSION)
+					card.SetCardSet(cardElement.InnerText);
+				else if (elementType == eCardElement.ELEMENT_RARITY)
+				{
+					card.SetRarity(cardElement.InnerText);
+					break;
 				}
-				else if (isManaCost == true)
+				else if (elementType == eCardElement.ELEMENT_COST)
 				{
 					string text = cardElement.InnerHtml;
 					string[] textList = text.Split('"');
 
 					bool isCost = false;
 					List<string> manaCostList = new List<string>();
-					foreach(string temp in textList)
+					foreach (string temp in textList)
 					{
-						if(isCost == true)
+						if (isCost == true)
 						{
 							manaCostList.Add(temp);
 							isCost = false;
@@ -59,105 +93,75 @@ namespace DeckBuilder
 					if (0 < manaCostList.Count)
 						card.SetManaCost(manaCostList);
 
-					isManaCost = false;
-				}
-				else if(isCMC == true)
-				{
-					card.SetCMC(cardElement.InnerText);
-					isCMC = false;
-				}
-				else if (isType == true)
-				{
-					card.SetType(cardElement.InnerText);
-					isType = false;
-				}
-				else if (isCardText == true)
-				{
-					card.SetText(cardElement.InnerText);
-					isCardText = false;
-				}
-				else if (isExpansion == true)
-				{
-					card.SetCardSet(cardElement.InnerText);
-					isExpansion = false;
-				}
-				else if (isRarity == true)
-				{
-					card.SetRarity(cardElement.InnerText);
-					isRarity = false;
+					elementType = eCardElement.ELEMENT_NONE;
 				}
 
+				elementType = eCardElement.ELEMENT_NONE;
 				if (cardElement.InnerText == "Card Name:")
-					isCardName = true;
+					elementType = eCardElement.ELEMENT_CARD_NAME;
 				else if (cardElement.InnerText == "Mana Cost:")
-					isManaCost = true;
+					elementType = eCardElement.ELEMENT_COST;
 				else if (cardElement.InnerText == "Converted Mana Cost:")
-					isCMC = true;
+					elementType = eCardElement.ELEMENT_CMC;
 				else if (cardElement.InnerText == "Types:")
-					isType = true;
+					elementType = eCardElement.ELEMENT_TYPE;
 				else if (cardElement.InnerText == "Card Text:")
-					isCardText = true;
+					elementType = eCardElement.ELEMENT_TEXT;
 				else if (cardElement.InnerText == "Expansion:")
-					isExpansion = true;
+					elementType = eCardElement.ELEMENT_EXPANSION;
 				else if (cardElement.InnerText == "Rarity:")
-					isRarity = true;
+					elementType = eCardElement.ELEMENT_RARITY;
 			}
 
-			return card;
+			return true;
 		}
-		/*
-		static public void MakeMovieDB(HtmlElement cardHElement, out CardData cardData)
+
+		private static bool GetCardImage(in HtmlDocument document, ref CardData card)
 		{
-			cardData = new CardData();
-
-			int lineIndex = 0;
-
-			//string text2 = movieHElement.InnerText;
-			foreach(HtmlElement item in cardHElement.GetElementsByTagName("div"))
+			HtmlElementCollection dataList = document.GetElementsByTagName("img");
+			foreach (HtmlElement cardElement in dataList)
 			{
-				string innerHtml = item.InnerHtml;
-				string innerText = item.InnerText;
-			}
-			
-			foreach (HtmlElement item in movieHElement.GetElementsByTagName("dt"))
-			{
-				cardData.title = item.InnerText;
-			}
-
-			foreach (HtmlElement item2 in movieHElement.GetElementsByTagName("dd"))
-			{
-				if (lineIndex == 1)
+				if (cardElement.GetAttribute("alt") == card.GetCardName())
 				{
-					foreach (HtmlElement item3 in item2.GetElementsByTagName("a"))
+					String imgUrl = cardElement.GetAttribute("src");
+					DownLoadCardImage(imgUrl.ToString(), ref card);
+
+					break;
+				}
+			}
+
+			return true;
+		}
+
+		private static void DownLoadCardImage(String imgUrl, ref CardData card)
+		{
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(imgUrl);
+			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+			bool bImage = response.ContentType.StartsWith("image", StringComparison.OrdinalIgnoreCase);
+			if ((response.StatusCode == HttpStatusCode.OK ||
+				response.StatusCode == HttpStatusCode.Moved ||
+				response.StatusCode == HttpStatusCode.Redirect) &&
+				bImage)
+			{
+				card.SetImagePath(m_imageDir + card.GetCardName() + ".jpeg");
+
+				using (Stream inputStream = response.GetResponseStream())
+				using (Stream outputStream = File.OpenWrite(card.GetImagePath()))
+				{
+					byte[] buffer = new byte[4096];
+					int bytesRead;
+					do
 					{
-						string text = item3.InnerText;
-						string href = item3.GetAttribute("href");
-
-						if (href.IndexOf("genre") > -1)
-							cardData.genre.Add(text);
-						else if (href.IndexOf("nation") > -1)
-							cardData.nation.Add(text);
-						else if (href.IndexOf("year") > -1)
-							cardData.year = text;
-					}
+						bytesRead = inputStream.Read(buffer, 0, buffer.Length);
+						outputStream.Write(buffer, 0, bytesRead);
+					} while (bytesRead != 0);
 				}
-				else if (lineIndex == 2)
-				{
-					string text = item2.InnerText;
-					text = text.Replace("감독 : ", string.Empty);
-					text = text.Replace("출연 : ", string.Empty);
-					text = text.Replace(", ", ",");
-
-					string[] directorAndActor = text.Split('|');
-					string[] director = directorAndActor[0].Split(',');
-					string[] actor = directorAndActor[1].Split(',');
-
-					cardData.director.AddRange(director);
-					cardData.actor.AddRange(actor);
-				}
-				lineIndex++;
 			}
 		}
-	*/
+
+	public void Dispose()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

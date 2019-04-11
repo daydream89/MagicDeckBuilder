@@ -47,13 +47,14 @@ namespace DeckBuilder
 
 	class CardData
 	{
-		private string cardName;
+		private String cardName;
 		private int[] manaCost;
 		private int convertedManaCost;
 		private bool[] type;
-		private string text;
-		private string cardSet;
+		private String text;
+		private String cardSet;
 		private Rarity rarity;
+		private String imagePath;
 
 		public CardData()
 		{
@@ -64,6 +65,7 @@ namespace DeckBuilder
 			text = "";
 			cardSet = "";
 			rarity = Rarity.RARITY_NONE;
+			imagePath = "";
 
 			type = new bool[(int)CardType.CARD_TYPE_MAX];
 			for (int i = (int)CardType.CARD_TYPE_NONE; i < (int)CardType.CARD_TYPE_MAX; ++i)
@@ -98,6 +100,9 @@ namespace DeckBuilder
 
 		public void SetRarity(string cardRarity) { rarity = ConvertStringToRarity(cardRarity); }
 		public Rarity GetRarity() { return rarity; }
+
+		public void SetImagePath(string path) { imagePath = path; }
+		public string GetImagePath() { return imagePath; }
 
 		private bool[] ConvertStringToCardType(string typeStr)
 		{
