@@ -31,13 +31,14 @@
 			this.CardDatabaseGB = new System.Windows.Forms.GroupBox();
 			this.ListCardImgGB = new System.Windows.Forms.GroupBox();
 			this.CardOptionGB = new System.Windows.Forms.GroupBox();
+			this.CardDataProgressBar = new System.Windows.Forms.ProgressBar();
+			this.RefreshListBtn = new System.Windows.Forms.Button();
+			this.CrawlingCardBtn = new System.Windows.Forms.Button();
 			this.CardListBox = new System.Windows.Forms.ListBox();
 			this.DeckBuilderGB = new System.Windows.Forms.GroupBox();
 			this.DeckCardImgGB = new System.Windows.Forms.GroupBox();
 			this.DeckOptionGB = new System.Windows.Forms.GroupBox();
 			this.DeckList = new System.Windows.Forms.ListBox();
-			this.CrawlingCardBtn = new System.Windows.Forms.Button();
-			this.RefreshListBtn = new System.Windows.Forms.Button();
 			this.CardDatabaseGB.SuspendLayout();
 			this.CardOptionGB.SuspendLayout();
 			this.DeckBuilderGB.SuspendLayout();
@@ -66,6 +67,7 @@
 			// 
 			// CardOptionGB
 			// 
+			this.CardOptionGB.Controls.Add(this.CardDataProgressBar);
 			this.CardOptionGB.Controls.Add(this.RefreshListBtn);
 			this.CardOptionGB.Controls.Add(this.CrawlingCardBtn);
 			this.CardOptionGB.Location = new System.Drawing.Point(192, 24);
@@ -74,6 +76,35 @@
 			this.CardOptionGB.TabIndex = 1;
 			this.CardOptionGB.TabStop = false;
 			this.CardOptionGB.Text = "Option";
+			// 
+			// CardDataProgressBar
+			// 
+			this.CardDataProgressBar.Location = new System.Drawing.Point(6, 63);
+			this.CardDataProgressBar.Name = "CardDataProgressBar";
+			this.CardDataProgressBar.Size = new System.Drawing.Size(168, 23);
+			this.CardDataProgressBar.TabIndex = 2;
+			// 
+			// RefreshListBtn
+			// 
+			this.RefreshListBtn.Font = new System.Drawing.Font("굴림", 8F);
+			this.RefreshListBtn.Location = new System.Drawing.Point(129, 24);
+			this.RefreshListBtn.Name = "RefreshListBtn";
+			this.RefreshListBtn.Size = new System.Drawing.Size(46, 33);
+			this.RefreshListBtn.TabIndex = 1;
+			this.RefreshListBtn.Text = "갱신";
+			this.RefreshListBtn.UseVisualStyleBackColor = true;
+			this.RefreshListBtn.Click += new System.EventHandler(this.RefreshListBtn_Click);
+			// 
+			// CrawlingCardBtn
+			// 
+			this.CrawlingCardBtn.Font = new System.Drawing.Font("굴림", 8F);
+			this.CrawlingCardBtn.Location = new System.Drawing.Point(6, 24);
+			this.CrawlingCardBtn.Name = "CrawlingCardBtn";
+			this.CrawlingCardBtn.Size = new System.Drawing.Size(117, 33);
+			this.CrawlingCardBtn.TabIndex = 0;
+			this.CrawlingCardBtn.Text = "카드 가져오기";
+			this.CrawlingCardBtn.UseVisualStyleBackColor = true;
+			this.CrawlingCardBtn.Click += new System.EventHandler(this.CrawlingCardBtn_Click);
 			// 
 			// CardListBox
 			// 
@@ -123,28 +154,6 @@
 			this.DeckList.Size = new System.Drawing.Size(180, 394);
 			this.DeckList.TabIndex = 0;
 			// 
-			// CrawlingCardBtn
-			// 
-			this.CrawlingCardBtn.Font = new System.Drawing.Font("굴림", 8F);
-			this.CrawlingCardBtn.Location = new System.Drawing.Point(6, 24);
-			this.CrawlingCardBtn.Name = "CrawlingCardBtn";
-			this.CrawlingCardBtn.Size = new System.Drawing.Size(117, 33);
-			this.CrawlingCardBtn.TabIndex = 0;
-			this.CrawlingCardBtn.Text = "카드 가져오기";
-			this.CrawlingCardBtn.UseVisualStyleBackColor = true;
-			this.CrawlingCardBtn.Click += new System.EventHandler(this.CrawlingCardBtn_Click);
-			// 
-			// RefreshListBtn
-			// 
-			this.RefreshListBtn.Font = new System.Drawing.Font("굴림", 8F);
-			this.RefreshListBtn.Location = new System.Drawing.Point(129, 24);
-			this.RefreshListBtn.Name = "RefreshListBtn";
-			this.RefreshListBtn.Size = new System.Drawing.Size(46, 33);
-			this.RefreshListBtn.TabIndex = 1;
-			this.RefreshListBtn.Text = "갱신";
-			this.RefreshListBtn.UseVisualStyleBackColor = true;
-			this.RefreshListBtn.Click += new System.EventHandler(this.RefreshListBtn_Click);
-			// 
 			// DeckBuilder
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -173,6 +182,7 @@
 		private System.Windows.Forms.GroupBox DeckCardImgGB;
 		private System.Windows.Forms.Button CrawlingCardBtn;
 		private System.Windows.Forms.Button RefreshListBtn;
+		private System.Windows.Forms.ProgressBar CardDataProgressBar;
 	}
 }
 

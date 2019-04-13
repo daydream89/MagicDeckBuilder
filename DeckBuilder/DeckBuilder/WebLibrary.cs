@@ -25,7 +25,7 @@ namespace DeckBuilder
 
 		private const String m_imageDir = "CardData\\Images\\";
 
-		static public String MakeURL(string cardID)
+		public String MakeURL(string cardID)
 		{
 			StringBuilder urlStr = new StringBuilder();
 			urlStr.Clear();
@@ -35,36 +35,36 @@ namespace DeckBuilder
 			return urlStr.ToString();
 		}
 
-		static public HtmlDocument GetHTMLDocumentByURL(String url, String encoder = "")
+		public HtmlDocument GetHTMLDocumentByURL(String url)
 		{
 			HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(url);
 			HttpWebResponse webResp = (HttpWebResponse)webReq.GetResponse();
 
-			TextReader reader;
-			if (encoder == "")
-				reader = (TextReader)new StreamReader(webResp.GetResponseStream());
-			else
-				reader = (TextReader)new StreamReader(webResp.GetResponseStream(), Encoding.GetEncoding(encoder));
-
+			TextReader reader = (TextReader)new StreamReader(webResp.GetResponseStream());
 			String html = reader.ReadToEnd();
 			HtmlDocument doc = GetHTMLDocumentByHTML(html);
+
+			reader.Close();
+			webResp.Close();
 
 			return doc;
 		}
 
-		static public HtmlDocument GetHTMLDocumentByHTML(String html)
+		public HtmlDocument GetHTMLDocumentByHTML(String html)
 		{
-			WebBrowser browser = new WebBrowser();
-			browser.ScriptErrorsSuppressed = true;
-			browser.DocumentText = html;
-			browser.Document.OpenNew(true);
-			browser.Document.Write(html);
-			browser.Refresh();
+			using (WebBrowser browser = new WebBrowser())
+			{
+				browser.ScriptErrorsSuppressed = true;
+				browser.DocumentText = html;
+				browser.Document.OpenNew(true);
+				browser.Document.Write(html);
+				browser.Refresh();
 
-			return browser.Document;
+				return browser.Document;
+			}
 		}
 
-	static public CardData MakeCardData(HtmlDocument document, String cardID)
+		public CardData MakeCardData(HtmlDocument document, String cardID)
 		{
 			if (Directory.Exists(m_imageDir) == false)
 				Directory.CreateDirectory(m_imageDir);
@@ -74,12 +74,11 @@ namespace DeckBuilder
 
 			GetCardText(in document, ref card);
 			DownLoadCardImage(ref card);
-			//GetCardImage(in document, ref card);
-
+			
 			return card;
 		}
 
-		private static bool GetCardText(in HtmlDocument document, ref CardData card)
+		private bool GetCardText(in HtmlDocument document, ref CardData card)
 		{
 			eCardElement elementType = eCardElement.ELEMENT_NONE;
 
@@ -146,14 +145,14 @@ namespace DeckBuilder
 			return true;
 		}
 
-		private static bool GetCardImage(in HtmlDocument document, ref CardData card)
+		private bool GetCardImage(in HtmlDocument document, ref CardData card)
 		{
 			DownLoadCardImage(ref card);
 
 			return true;
 		}
 
-		private static void DownLoadCardImage(ref CardData card)
+		private void DownLoadCardImage(ref CardData card)
 		{
 			StringBuilder url = new StringBuilder("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=");
 			url.Append(card.GetCardID());
@@ -169,21 +168,25 @@ namespace DeckBuilder
 			{
 				card.SetImagePath(m_imageDir + card.GetCardName() + ".jpeg");
 
-				using (Stream inputStream = response.GetResponseStream())
-				using (Stream outputStream = File.OpenWrite(card.GetImagePath()))
+				Stream inputStream = response.GetResponseStream();
+				Stream outputStream = File.OpenWrite(card.GetImagePath());
+
+				byte[] buffer = new byte[4096];
+				int bytesRead;
+				do
 				{
-					byte[] buffer = new byte[4096];
-					int bytesRead;
-					do
-					{
-						bytesRead = inputStream.Read(buffer, 0, buffer.Length);
-						outputStream.Write(buffer, 0, bytesRead);
-					} while (bytesRead != 0);
-				}
+					bytesRead = inputStream.Read(buffer, 0, buffer.Length);
+					outputStream.Write(buffer, 0, bytesRead);
+				} while (bytesRead != 0);
+
+				inputStream.Close();
+				outputStream.Close();
 			}
+
+			response.Close();
 		}
 
-	public void Dispose()
+		public void Dispose()
 		{
 			throw new NotImplementedException();
 		}
