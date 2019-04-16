@@ -37,10 +37,10 @@ namespace DeckBuilder
 	{
 		RARITY_NONE = 0,
 
-		RARITY_COMMON,
-		RARITY_UNCOMMON,
-		RARITY_RARE,
-		RARITY_MITHIC_RARE,
+		COMMON,
+		UNCOMMON,
+		RARE,
+		MITHIC_RARE,
 
 		RARITY_MAX,
 	}
@@ -141,13 +141,13 @@ namespace DeckBuilder
 		private Rarity ConvertStringToRarity(string cardRarity)
 		{
 			if (cardRarity.ToLower() == "common")
-				return Rarity.RARITY_COMMON;
+				return Rarity.COMMON;
 			else if (cardRarity.ToLower() == "uncommon")
-				return Rarity.RARITY_UNCOMMON;
+				return Rarity.UNCOMMON;
 			else if (cardRarity.ToLower() == "rare")
-				return Rarity.RARITY_RARE;
+				return Rarity.RARE;
 			else if (cardRarity.ToLower() == "mithic rare")
-				return Rarity.RARITY_MITHIC_RARE;
+				return Rarity.MITHIC_RARE;
 			else
 				return Rarity.RARITY_NONE;
 		}
