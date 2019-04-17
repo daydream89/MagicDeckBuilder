@@ -23,8 +23,6 @@ namespace DeckBuilder
 			ELEMENT_RARITY,
 		}
 
-		private const String m_imageDir = "CardData\\Images\\";
-
 		public String MakeURL(string cardID)
 		{
 			StringBuilder urlStr = new StringBuilder();
@@ -64,16 +62,16 @@ namespace DeckBuilder
 			}
 		}
 
-		public CardData MakeCardData(HtmlDocument document, String cardID)
+		public CardData MakeCardData(HtmlDocument document, String imagePath, String cardID)
 		{
-			if (Directory.Exists(m_imageDir) == false)
-				Directory.CreateDirectory(m_imageDir);
+			if (Directory.Exists(imagePath) == false)
+				Directory.CreateDirectory(imagePath);
 
 			CardData card = new CardData();
 			card.SetCardID(cardID);
 
 			GetCardText(in document, ref card);
-			DownLoadCardImage(ref card);
+			DownLoadCardImage(imagePath, ref card);
 			
 			return card;
 		}
@@ -145,14 +143,7 @@ namespace DeckBuilder
 			return true;
 		}
 
-		private bool GetCardImage(in HtmlDocument document, ref CardData card)
-		{
-			DownLoadCardImage(ref card);
-
-			return true;
-		}
-
-		private void DownLoadCardImage(ref CardData card)
+		private void DownLoadCardImage(String imagePath, ref CardData card)
 		{
 			StringBuilder url = new StringBuilder("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=");
 			url.Append(card.GetCardID());
@@ -166,7 +157,7 @@ namespace DeckBuilder
 				response.StatusCode == HttpStatusCode.Redirect) &&
 				bImage)
 			{
-				card.SetImagePath(m_imageDir + card.GetCardName() + ".jpeg");
+				card.SetImagePath(imagePath + card.GetCardName() + ".jpeg");
 
 				Stream inputStream = response.GetResponseStream();
 				Stream outputStream = File.OpenWrite(card.GetImagePath());

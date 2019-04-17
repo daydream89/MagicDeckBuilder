@@ -47,6 +47,7 @@ namespace DeckBuilder
 
 	class CardData
 	{
+		// todo. 양면 카드 고려 필요.
 		private String cardID;
 		private String cardName;
 		private int[] manaCost;
@@ -79,37 +80,39 @@ namespace DeckBuilder
 			
 		}
 
-		public void SetCardID(string id) { cardID = id; }
-		public string GetCardID() { return cardID; }
+		public void SetCardID(String id) { cardID = id; }
+		public String GetCardID() { return cardID; }
 
-		public void SetCardName(string name) { cardName = name; }
-		public string GetCardName() { return cardName; }
+		public void SetCardName(String name) { cardName = name; }
+		public String GetCardName() { return cardName; }
 
-		public void SetManaCost(List<string> costList) { manaCost = ConvertStringListToManaCost(costList); }
+		public void SetManaCost(List<String> costList) { manaCost = ConvertStringListToManaCost(costList); }
+		public void SetManaCost(String costList) { manaCost = ConvertStringListToManaCost(costList); }
 		public int[] GetManaCost() { return manaCost; }
 
-		public void SetCMC(string cmc) { convertedManaCost = Int32.Parse(cmc); }
+		public void SetCMC(String cmc) { convertedManaCost = Int32.Parse(cmc); }
 		public int GetCMC() { return convertedManaCost; }
 
-		public void SetType(string cardType) { type = ConvertStringToCardType(cardType); }
+		public void SetType(String cardType) { type = ConvertStringToCardType(cardType); }
+		public void SetType(List<String> typeList) { type = ConvertStringToCardType(typeList); }
 		public void SetType(bool[] cardType) { type = cardType; }
 		public bool[] GetCardType() { return type; }
 		public bool IsCardType(CardType cardType) { return type[(int)cardType]; }
 
-		public void SetText(string cardText) { text = cardText; }
-		public string GetText() { return text; }
+		public void SetText(String cardText) { text = cardText; }
+		public String GetText() { return text; }
 
-		public void SetCardSet(string expansion) { cardSet = expansion; }
-		public string GetCardSet() { return cardSet; }
-		public bool IsIncludeSet(string setName) { return setName == cardSet; }
+		public void SetCardSet(String expansion) { cardSet = expansion; }
+		public String GetCardSet() { return cardSet; }
+		public bool IsIncludeSet(String setName) { return setName == cardSet; }
 
-		public void SetRarity(string cardRarity) { rarity = ConvertStringToRarity(cardRarity); }
+		public void SetRarity(String cardRarity) { rarity = ConvertStringToRarity(cardRarity); }
 		public Rarity GetRarity() { return rarity; }
 
-		public void SetImagePath(string path) { imagePath = path; }
-		public string GetImagePath() { return imagePath; }
+		public void SetImagePath(String path) { imagePath = path; }
+		public String GetImagePath() { return imagePath; }
 
-		private bool[] ConvertStringToCardType(string typeStr)
+		private bool[] ConvertStringToCardType(String typeStr)
 		{
 			bool[] cardType = new bool[(int)CardType.CARD_TYPE_MAX];
 			for (int i = (int)CardType.CARD_TYPE_NONE; i < (int)CardType.CARD_TYPE_MAX; ++i)
@@ -138,7 +141,25 @@ namespace DeckBuilder
 			return cardType;
 		}
 
-		private Rarity ConvertStringToRarity(string cardRarity)
+		private bool[] ConvertStringToCardType(List<String> typeList)
+		{
+			bool[] cardType = new bool[(int)CardType.CARD_TYPE_MAX];
+			for (int i = (int)CardType.CARD_TYPE_NONE; i < (int)CardType.CARD_TYPE_MAX; ++i)
+				cardType[i] = false;
+
+			CardType type = CardType.CARD_TYPE_NONE;
+			foreach (String strType in typeList)
+			{
+				if (strType == "1")
+					cardType[(int)type] = true;
+
+				type++;
+			}
+
+			return cardType;
+		}
+
+		private Rarity ConvertStringToRarity(String cardRarity)
 		{
 			if (cardRarity.ToLower() == "common")
 				return Rarity.COMMON;
@@ -152,11 +173,11 @@ namespace DeckBuilder
 				return Rarity.RARITY_NONE;
 		}
 
-		private int[] ConvertStringListToManaCost(List<string> costList)
+		private int[] ConvertStringListToManaCost(List<String> costList)
 		{
 			int[] manaCost = new int[(int)ManaType.MANA_TYPE_MAX];
 
-			foreach(string cost in costList)
+			foreach(String cost in costList)
 			{
 				if (cost.ToLower() == "white")
 					manaCost[(int)ManaType.MANA_TYPE_WHITE]++;
@@ -171,6 +192,16 @@ namespace DeckBuilder
 				else
 					manaCost[(int)ManaType.MANA_TYPE_COMMON] = Int32.Parse(cost);
 			}
+
+			return manaCost;
+		}
+
+		private int[] ConvertStringListToManaCost(String strCost)
+		{
+			int[] manaCost = new int[(int)ManaType.MANA_TYPE_MAX];
+
+			for(ManaType mana = ManaType.MANA_TYPE_COMMON; mana < ManaType.MANA_TYPE_MAX; mana++)
+				manaCost[(int)mana] = Int32.Parse(strCost.Substring((int)mana, 1));
 
 			return manaCost;
 		}

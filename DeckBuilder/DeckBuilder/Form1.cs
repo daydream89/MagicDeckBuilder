@@ -88,33 +88,13 @@ namespace DeckBuilder
 				m_CardList.Add(expansion, cardList);
 			}
 
-			//for test
-			String name = "아단토 선봉대";
-			CardData data = new CardData();
-			data.SetCardID("436647");
-			data.SetCardName(name);
-			data.SetCardSet("Ixalan");
-			data.SetCMC("2");
-			data.SetRarity("uncommon");
-			data.SetText("아단토 선봉대가 공격 중인 한 아단토 선봉대는 +2/+0을 받는다. 생명 4점을 지불한다: 아단토 선봉대는 턴종료까지 무적을 얻는다.");
-			data.SetType("creature");
-			data.SetImagePath("CardData\\Images\\아단토 선봉대.jpeg");
-
-			List<String> cost = new List<string>();
-			cost.Add("1");
-			cost.Add("white");
-			data.SetManaCost(cost);
-
-			m_CardList[eExpansion.IXALAN].Add(name, data);
-			SaveCardData();
-
-			//CardListBox.Items.Add(name);
-
-			//LoadCardData();
+			LoadCardData();
+			RefreshCardList();
 
 			SetExpansionComboBox();
 		}
 
+		// todo. 이거 따로 file 관리 class 만들어서 빼줄 것.
 		public void SaveCardData()
 		{
 			if (Directory.Exists(m_cardDataDir) == false)
@@ -134,11 +114,13 @@ namespace DeckBuilder
 
 				foreach (KeyValuePair<String, CardData> card in cardList.Value)
 				{
+					// todo. CardData 내부에서만 array로 관리하고 해당 array가 밖으로 나오지 않도록 하자.
 					int[] cost = card.Value.GetManaCost();
 					StringBuilder strMana = new StringBuilder();
 					for (ManaType mana = 0; mana < ManaType.MANA_TYPE_MAX; mana++)
 						strMana.Append(cost[(int)mana].ToString());
 
+					// todo. 이거 list로 만들어도 되지 않을까?
 					bool[] types = card.Value.GetCardType();
 					StringBuilder strType = new StringBuilder();
 					for (CardType type = 0; type < CardType.CARD_TYPE_MAX; type++)
@@ -169,16 +151,15 @@ namespace DeckBuilder
 			}
 		}
 
+		// todo. 이거 따로 file 관리 class 만들어서 빼줄 것.
 		public void LoadCardData()
 		{
-			StringBuilder dir = new StringBuilder(m_cardDataDir);
-			dir.Append("Text\\");
-			if (Directory.Exists(dir.ToString()) == false)
-				Directory.CreateDirectory(dir.ToString());
+			if (Directory.Exists(m_cardDataDir) == false)
+				Directory.CreateDirectory(m_cardDataDir);
 
 			for (eExpansion expansion = eExpansion.IXALAN; expansion != eExpansion.EXPANSION_MAX; expansion++)
 			{
-				StringBuilder filePath = new StringBuilder(dir.ToString());
+				StringBuilder filePath = new StringBuilder(m_cardDataDir);
 				filePath.Append(GetStringFromExpansionEnum(expansion));
 				filePath.Append(".xml");
 
@@ -190,7 +171,46 @@ namespace DeckBuilder
 
 				foreach(XmlNode node in doc.DocumentElement.ChildNodes)
 				{
-					String data = node.InnerText;
+					CardData cardData = new CardData();
+					cardData.SetCardSet(GetStringFromExpansionEnum(expansion));
+					StringBuilder value = new StringBuilder();
+
+					value.Append(node.Attributes["ID"].Value);
+					cardData.SetCardID(value.ToString());
+					value.Clear();
+
+					value.Append(node.Attributes["Name"].Value);
+					cardData.SetCardName(value.ToString());
+					value.Clear();
+
+					value.Append(node.Attributes["ManaCost"].Value);
+					cardData.SetManaCost(value.ToString());
+					value.Clear();
+
+					value.Append(node.Attributes["CMC"].Value);
+					cardData.SetCMC(value.ToString());
+					value.Clear();
+
+					value.Append(node.Attributes["Type"].Value);
+					List<String> typeList = new List<string>();
+					for (int i = 0; i < value.Length; ++i)
+						typeList.Add(value.ToString().Substring(i, 1));
+					cardData.SetType(typeList);
+					value.Clear();
+
+					value.Append(node.Attributes["Text"].Value);
+					cardData.SetText(value.ToString());
+					value.Clear();
+
+					value.Append(node.Attributes["Rarity"].Value);
+					cardData.SetRarity(value.ToString());
+					value.Clear();
+
+					value.Append(node.Attributes["ImagePath"].Value);
+					cardData.SetImagePath(value.ToString());
+					value.Clear();
+
+					m_CardList[expansion].Add(cardData.GetCardName(), cardData);
 				}
 			}
 		}
@@ -205,19 +225,21 @@ namespace DeckBuilder
 
 		public void CrawlingCard()
 		{
-			String expansionName = ExpansionComboBox.SelectedText;
+			String expansionName = ExpansionComboBox.SelectedItem as String;
 			eExpansion expansion = GetExpansionEnumFromString(expansionName);
+			StringBuilder imagePath = new StringBuilder(m_cardImageDir);
+			imagePath.Append(expansionName);
+			imagePath.Append("\\");
 
-			int cardNum = m_cardSetNumList[expansion];
 			int startCardId = m_setStartIdList[expansion];
-			for (int i = 0; i < cardNum; ++i)
+			for (int i = 0; i < m_cardSetNumList[expansion]; ++i)
 			{
 				int cardID = startCardId + i;
 				String strCardID = cardID.ToString();
 				String url = m_WebLibrary.MakeURL(strCardID);
 
 				HtmlDocument doc = m_WebLibrary.GetHTMLDocumentByURL(url);
-				CardData card = m_WebLibrary.MakeCardData(doc, strCardID);
+				CardData card = m_WebLibrary.MakeCardData(doc, imagePath.ToString(), strCardID);
 
 				if (m_CardList[expansion].ContainsKey(card.GetCardName()) == false)
 					m_CardList[expansion].Add(card.GetCardName(), card);
@@ -233,6 +255,11 @@ namespace DeckBuilder
 		}
 
 		private void RefreshListBtn_Click(object sender, EventArgs e)
+		{
+			RefreshCardList();
+		}
+
+		private void RefreshCardList()
 		{
 			foreach (KeyValuePair<eExpansion, Dictionary<String, CardData>> cardList in m_CardList)
 			{
