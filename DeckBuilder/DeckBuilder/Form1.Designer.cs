@@ -200,6 +200,7 @@
 			this.Controls.Add(this.CardDatabaseGB);
 			this.Name = "DeckBuilder";
 			this.Text = "MTG Deck Builder";
+			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.DeckBuilder_FormClosed);
 			this.CardDatabaseGB.ResumeLayout(false);
 			this.ListCardImgGB.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.ListCardImg)).EndInit();

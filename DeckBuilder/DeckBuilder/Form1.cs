@@ -26,8 +26,8 @@ namespace DeckBuilder
 
 	public partial class DeckBuilder : Form
 	{
-		private const String m_cardDataDir = "CardData\\Text\\";
-		private const String m_cardImageDir = "CardData\\Image\\";
+		private String m_cardDataDir;
+		private String m_cardImageDir;
 		private Dictionary<eExpansion, int> m_setStartIdList;
 		private Dictionary<eExpansion, int> m_cardSetNumList;
 
@@ -70,16 +70,9 @@ namespace DeckBuilder
 		{
 			InitializeComponent();
 
-			// need change this file read later.
-			m_setStartIdList = new Dictionary<eExpansion, int>{ { eExpansion.IXALAN, 436647 }, { eExpansion.RIVALS_OF_IXALAN, 440876 }, { eExpansion.DOMINARIA, 444503 },
-														   { eExpansion.CORE_SET_2019, 448823 }, { eExpansion.GUILD_OF_RAVNICA, 454305 }, { eExpansion.RAVNICA_ALLEGIANCE, 458699 } };
-
-			m_cardSetNumList = new Dictionary<eExpansion, int>{ { eExpansion.IXALAN, 284 }, { eExpansion.RIVALS_OF_IXALAN, 212 }, { eExpansion.DOMINARIA, 265 },
-														    { eExpansion.CORE_SET_2019, 280 }, { eExpansion.GUILD_OF_RAVNICA, 288 }, { eExpansion.RAVNICA_ALLEGIANCE, 270 } };
-
-			if (Directory.Exists(m_cardDataDir) == false)
-				Directory.CreateDirectory(m_cardDataDir);
-
+			// initialize member variables
+			m_setStartIdList = new Dictionary<eExpansion, int>();
+			m_cardSetNumList = new Dictionary<eExpansion, int>();
 			m_WebLibrary = new WebLibrary();
 			m_CardList = new Dictionary<eExpansion, Dictionary<string, CardData>>();
 			for (eExpansion expansion = eExpansion.IXALAN; expansion < eExpansion.EXPANSION_MAX; ++expansion)
@@ -88,131 +81,12 @@ namespace DeckBuilder
 				m_CardList.Add(expansion, cardList);
 			}
 
+			// load settings & card data
+			LoadSettings();
 			LoadCardData();
 			RefreshCardList();
 
 			SetExpansionComboBox();
-		}
-
-		// todo. 이거 따로 file 관리 class 만들어서 빼줄 것.
-		public void SaveCardData()
-		{
-			if (Directory.Exists(m_cardDataDir) == false)
-				Directory.CreateDirectory(m_cardDataDir);
-
-			foreach (KeyValuePair<eExpansion, Dictionary<String, CardData>> cardList in m_CardList)
-			{
-				String expansion = GetStringFromExpansionEnum(cardList.Key);
-				StringBuilder filePath = new StringBuilder(m_cardDataDir);
-				filePath.Append(expansion);
-				filePath.Append(".xml");
-
-				XmlTextWriter writer = new XmlTextWriter(filePath.ToString(), Encoding.UTF8);
-				writer.Formatting = Formatting.Indented;
-				writer.WriteStartDocument();
-				writer.WriteStartElement("CardList");
-
-				foreach (KeyValuePair<String, CardData> card in cardList.Value)
-				{
-					// todo. CardData 내부에서만 array로 관리하고 해당 array가 밖으로 나오지 않도록 하자.
-					int[] cost = card.Value.GetManaCost();
-					StringBuilder strMana = new StringBuilder();
-					for (ManaType mana = 0; mana < ManaType.MANA_TYPE_MAX; mana++)
-						strMana.Append(cost[(int)mana].ToString());
-
-					// todo. 이거 list로 만들어도 되지 않을까?
-					bool[] types = card.Value.GetCardType();
-					StringBuilder strType = new StringBuilder();
-					for (CardType type = 0; type < CardType.CARD_TYPE_MAX; type++)
-					{
-						if (types[(int)type] == true)
-							strType.Append("1");
-						else
-							strType.Append("0");
-					}
-
-					writer.WriteStartElement("Card");
-					writer.WriteAttributeString("ID", card.Value.GetCardID());
-					writer.WriteAttributeString("Name", card.Value.GetCardName());
-					writer.WriteAttributeString("ManaCost", strMana.ToString());
-					writer.WriteAttributeString("CMC", card.Value.GetCMC().ToString());
-					writer.WriteAttributeString("Type", strType.ToString());
-					writer.WriteAttributeString("Text", card.Value.GetText());
-					writer.WriteAttributeString("Expansion", card.Value.GetCardSet());
-					writer.WriteAttributeString("Rarity", card.Value.GetRarity().ToString());
-					writer.WriteAttributeString("ImagePath", card.Value.GetImagePath());
-					writer.WriteEndElement();
-				}
-
-				writer.WriteEndElement();
-				writer.WriteEndDocument();
-				writer.Flush();
-				writer.Close();
-			}
-		}
-
-		// todo. 이거 따로 file 관리 class 만들어서 빼줄 것.
-		public void LoadCardData()
-		{
-			if (Directory.Exists(m_cardDataDir) == false)
-				Directory.CreateDirectory(m_cardDataDir);
-
-			for (eExpansion expansion = eExpansion.IXALAN; expansion != eExpansion.EXPANSION_MAX; expansion++)
-			{
-				StringBuilder filePath = new StringBuilder(m_cardDataDir);
-				filePath.Append(GetStringFromExpansionEnum(expansion));
-				filePath.Append(".xml");
-
-				if (File.Exists(filePath.ToString()) == false)
-					continue;
-
-				XmlDocument doc = new XmlDocument();
-				doc.Load(filePath.ToString());
-
-				foreach(XmlNode node in doc.DocumentElement.ChildNodes)
-				{
-					CardData cardData = new CardData();
-					cardData.SetCardSet(GetStringFromExpansionEnum(expansion));
-					StringBuilder value = new StringBuilder();
-
-					value.Append(node.Attributes["ID"].Value);
-					cardData.SetCardID(value.ToString());
-					value.Clear();
-
-					value.Append(node.Attributes["Name"].Value);
-					cardData.SetCardName(value.ToString());
-					value.Clear();
-
-					value.Append(node.Attributes["ManaCost"].Value);
-					cardData.SetManaCost(value.ToString());
-					value.Clear();
-
-					value.Append(node.Attributes["CMC"].Value);
-					cardData.SetCMC(value.ToString());
-					value.Clear();
-
-					value.Append(node.Attributes["Type"].Value);
-					List<String> typeList = new List<string>();
-					for (int i = 0; i < value.Length; ++i)
-						typeList.Add(value.ToString().Substring(i, 1));
-					cardData.SetType(typeList);
-					value.Clear();
-
-					value.Append(node.Attributes["Text"].Value);
-					cardData.SetText(value.ToString());
-					value.Clear();
-
-					value.Append(node.Attributes["Rarity"].Value);
-					cardData.SetRarity(value.ToString());
-					value.Clear();
-
-					value.Append(node.Attributes["ImagePath"].Value);
-					cardData.SetImagePath(value.ToString());
-					value.Clear();
-
-					m_CardList[expansion].Add(cardData.GetCardName(), cardData);
-				}
-			}
 		}
 
 		public void SetExpansionComboBox()
@@ -279,6 +153,11 @@ namespace DeckBuilder
 					imagePath = cardList.Value[name].GetImagePath();
 
 			ListCardImg.Image = Image.FromFile(imagePath);
+		}
+
+		private void DeckBuilder_FormClosed(object sender, FormClosedEventArgs e)
+		{
+			SaveCardData();
 		}
 	}
 }
