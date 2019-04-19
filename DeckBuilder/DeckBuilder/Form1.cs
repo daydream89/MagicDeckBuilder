@@ -14,12 +14,12 @@ namespace DeckBuilder
 {
 	enum eExpansion
 	{
-		IXALAN = 0,
-		RIVALS_OF_IXALAN,
-		DOMINARIA,
-		CORE_SET_2019,
-		GUILD_OF_RAVNICA,
-		RAVNICA_ALLEGIANCE,
+		XLN = 0,
+		RIX,
+		DOM,
+		M19,
+		GRN,
+		RNA,
 
 		EXPANSION_MAX,
 	}
@@ -34,34 +34,34 @@ namespace DeckBuilder
 		private WebLibrary m_WebLibrary;
 		private Dictionary<eExpansion, Dictionary<String, CardData>> m_CardList;
 
-		private String GetStringFromExpansionEnum(eExpansion expansion)
+		private String GetFullNameFromExpansionEnum(eExpansion expansion)
 		{
 			switch (expansion)
 			{
-				case eExpansion.IXALAN: return "Ixalan";
-				case eExpansion.RIVALS_OF_IXALAN: return "Rivals of Ixalan";
-				case eExpansion.DOMINARIA: return "Dominaria";
-				case eExpansion.CORE_SET_2019: return "Core Set 2019";
-				case eExpansion.GUILD_OF_RAVNICA: return "Guild of Ravnica";
-				case eExpansion.RAVNICA_ALLEGIANCE: return "Ravnica Allegiance";
+				case eExpansion.XLN: return "Ixalan";
+				case eExpansion.RIX: return "Rivals of Ixalan";
+				case eExpansion.DOM: return "Dominaria";
+				case eExpansion.M19: return "Core Set 2019";
+				case eExpansion.GRN: return "Guild of Ravnica";
+				case eExpansion.RNA: return "Ravnica Allegiance";
 				default: return "";
 			}
 		}
 
 		private eExpansion GetExpansionEnumFromString(String expansionName)
 		{
-			if (expansionName == "Ixalan")
-				return eExpansion.IXALAN;
-			else if (expansionName == "Rivals of Ixalan")
-				return eExpansion.RIVALS_OF_IXALAN;
-			else if (expansionName == "Dominaria")
-				return eExpansion.DOMINARIA;
-			else if (expansionName == "Core Set 2019")
-				return eExpansion.CORE_SET_2019;
-			else if (expansionName == "Guild of Ravnica")
-				return eExpansion.GUILD_OF_RAVNICA;
-			else if (expansionName == "Ravnica Allegiance")
-				return eExpansion.RAVNICA_ALLEGIANCE;
+			if (expansionName == "Ixalan" || expansionName == "XLN")
+				return eExpansion.XLN;
+			else if (expansionName == "Rivals of Ixalan" || expansionName == "RIX")
+				return eExpansion.RIX;
+			else if (expansionName == "Dominaria" || expansionName == "DOM")
+				return eExpansion.DOM;
+			else if (expansionName == "Core Set 2019" || expansionName == "M19")
+				return eExpansion.M19;
+			else if (expansionName == "Guild of Ravnica" || expansionName == "GRN")
+				return eExpansion.GRN;
+			else if (expansionName == "Ravnica Allegiance" || expansionName == "RNA")
+				return eExpansion.RNA;
 
 			return eExpansion.EXPANSION_MAX;
 		}
@@ -75,7 +75,7 @@ namespace DeckBuilder
 			m_cardSetNumList = new Dictionary<eExpansion, int>();
 			m_WebLibrary = new WebLibrary();
 			m_CardList = new Dictionary<eExpansion, Dictionary<string, CardData>>();
-			for (eExpansion expansion = eExpansion.IXALAN; expansion < eExpansion.EXPANSION_MAX; ++expansion)
+			for (eExpansion expansion = eExpansion.XLN; expansion < eExpansion.EXPANSION_MAX; ++expansion)
 			{
 				Dictionary<string, CardData> cardList = new Dictionary<string, CardData>();
 				m_CardList.Add(expansion, cardList);
@@ -91,8 +91,8 @@ namespace DeckBuilder
 
 		public void SetExpansionComboBox()
 		{
-			for(eExpansion expansion = eExpansion.IXALAN; expansion != eExpansion.EXPANSION_MAX; expansion++)
-				ExpansionComboBox.Items.Add(GetStringFromExpansionEnum(expansion));
+			for(eExpansion expansion = eExpansion.XLN; expansion != eExpansion.EXPANSION_MAX; expansion++)
+				ExpansionComboBox.Items.Add(GetFullNameFromExpansionEnum(expansion));
 			
 			ExpansionComboBox.SelectedIndex = 0;
 		}

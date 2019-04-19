@@ -88,7 +88,7 @@ namespace DeckBuilder
 				else if (elementType == eCardElement.ELEMENT_CMC)
 					card.SetCMC(cardElement.InnerText);
 				else if (elementType == eCardElement.ELEMENT_TYPE)
-					card.SetType(cardElement.InnerText);
+					card.AddType(cardElement.InnerText);
 				else if (elementType == eCardElement.ELEMENT_TEXT)
 					card.SetText(cardElement.InnerText);
 				else if (elementType == eCardElement.ELEMENT_EXPANSION)

@@ -21,7 +21,7 @@ namespace DeckBuilder
 
 			foreach (KeyValuePair<eExpansion, Dictionary<String, CardData>> cardList in m_CardList)
 			{
-				String expansion = GetStringFromExpansionEnum(cardList.Key);
+				String expansion = cardList.Key.ToString();
 				StringBuilder filePath = new StringBuilder(m_cardDataDir);
 				filePath.Append(expansion);
 				filePath.Append(".xml");
@@ -39,23 +39,17 @@ namespace DeckBuilder
 					for (ManaType mana = 0; mana < ManaType.MANA_TYPE_MAX; mana++)
 						strMana.Append(cost[(int)mana].ToString());
 
-					// todo. 이거 list로 만들어도 되지 않을까?
-					bool[] types = card.Value.GetCardType();
-					StringBuilder strType = new StringBuilder();
-					for (CardType type = 0; type < CardType.CARD_TYPE_MAX; type++)
-					{
-						if (types[(int)type] == true)
-							strType.Append("1");
-						else
-							strType.Append("0");
-					}
+					List<CardType> typeList = card.Value.GetCardTypes();
+					StringBuilder strTypes = new StringBuilder();
+					foreach(CardType type in typeList)
+						strTypes.Append(((int)type).ToString());
 
 					writer.WriteStartElement("Card");
 					writer.WriteAttributeString("ID", card.Value.GetCardID());
 					writer.WriteAttributeString("Name", card.Value.GetCardName());
 					writer.WriteAttributeString("ManaCost", strMana.ToString());
 					writer.WriteAttributeString("CMC", card.Value.GetCMC().ToString());
-					writer.WriteAttributeString("Type", strType.ToString());
+					writer.WriteAttributeString("Type", strTypes.ToString());
 					writer.WriteAttributeString("Text", card.Value.GetText());
 					writer.WriteAttributeString("Expansion", card.Value.GetCardSet());
 					writer.WriteAttributeString("Rarity", card.Value.GetRarity().ToString());
@@ -75,10 +69,10 @@ namespace DeckBuilder
 			if (Directory.Exists(m_cardDataDir) == false)
 				Directory.CreateDirectory(m_cardDataDir);
 
-			for (eExpansion expansion = eExpansion.IXALAN; expansion != eExpansion.EXPANSION_MAX; expansion++)
+			for (eExpansion expansion = eExpansion.XLN; expansion != eExpansion.EXPANSION_MAX; expansion++)
 			{
 				StringBuilder filePath = new StringBuilder(m_cardDataDir);
-				filePath.Append(GetStringFromExpansionEnum(expansion));
+				filePath.Append(GetFullNameFromExpansionEnum(expansion));
 				filePath.Append(".xml");
 
 				if (File.Exists(filePath.ToString()) == false)
@@ -90,7 +84,7 @@ namespace DeckBuilder
 				foreach (XmlNode node in doc.DocumentElement.ChildNodes)
 				{
 					CardData cardData = new CardData();
-					cardData.SetCardSet(GetStringFromExpansionEnum(expansion));
+					cardData.SetCardSet(expansion.ToString());
 					StringBuilder value = new StringBuilder();
 
 					value.Append(node.Attributes["ID"].Value);
@@ -158,57 +152,19 @@ namespace DeckBuilder
 				}
 				else if (node.Name == "SetStartID")
 				{
-					// todo. set명 전부 3글자로 통일해서 for문으로 집어넣자.
-					StringBuilder data = new StringBuilder(node.Attributes["XLN"].Value);
-					m_setStartIdList.Add(eExpansion.IXALAN, Int32.Parse(data.ToString()));
-					data.Clear();
-
-					data.Append(node.Attributes["RIX"].Value);
-					m_setStartIdList.Add(eExpansion.RIVALS_OF_IXALAN, Int32.Parse(data.ToString()));
-					data.Clear();
-
-					data.Append(node.Attributes["DOM"].Value);
-					m_setStartIdList.Add(eExpansion.DOMINARIA, Int32.Parse(data.ToString()));
-					data.Clear();
-
-					data.Append(node.Attributes["M19"].Value);
-					m_setStartIdList.Add(eExpansion.CORE_SET_2019, Int32.Parse(data.ToString()));
-					data.Clear();
-
-					data.Append(node.Attributes["GRN"].Value);
-					m_setStartIdList.Add(eExpansion.GUILD_OF_RAVNICA, Int32.Parse(data.ToString()));
-					data.Clear();
-
-					data.Append(node.Attributes["RNA"].Value);
-					m_setStartIdList.Add(eExpansion.RAVNICA_ALLEGIANCE, Int32.Parse(data.ToString()));
-					data.Clear();
+					for (eExpansion expansion = eExpansion.XLN; expansion != eExpansion.EXPANSION_MAX; expansion++)
+					{
+						String data = node.Attributes[expansion.ToString()].Value;
+						m_setStartIdList.Add(expansion, Int32.Parse(data));
+					}
 				}
 				else if (node.Name == "SetCardNum")
 				{
-					// todo. set명 전부 3글자로 통일해서 for문으로 집어넣자.
-					StringBuilder data = new StringBuilder(node.Attributes["XLN"].Value);
-					m_cardSetNumList.Add(eExpansion.IXALAN, Int32.Parse(data.ToString()));
-					data.Clear();
-
-					data.Append(node.Attributes["RIX"].Value);
-					m_cardSetNumList.Add(eExpansion.RIVALS_OF_IXALAN, Int32.Parse(data.ToString()));
-					data.Clear();
-
-					data.Append(node.Attributes["DOM"].Value);
-					m_cardSetNumList.Add(eExpansion.DOMINARIA, Int32.Parse(data.ToString()));
-					data.Clear();
-
-					data.Append(node.Attributes["M19"].Value);
-					m_cardSetNumList.Add(eExpansion.CORE_SET_2019, Int32.Parse(data.ToString()));
-					data.Clear();
-
-					data.Append(node.Attributes["GRN"].Value);
-					m_cardSetNumList.Add(eExpansion.GUILD_OF_RAVNICA, Int32.Parse(data.ToString()));
-					data.Clear();
-
-					data.Append(node.Attributes["RNA"].Value);
-					m_cardSetNumList.Add(eExpansion.RAVNICA_ALLEGIANCE, Int32.Parse(data.ToString()));
-					data.Clear();
+					for (eExpansion expansion = eExpansion.XLN; expansion != eExpansion.EXPANSION_MAX; expansion++)
+					{
+						String data = node.Attributes[expansion.ToString()].Value;
+						m_cardSetNumList.Add(expansion, Int32.Parse(data));
+					}
 				}
 			}
 

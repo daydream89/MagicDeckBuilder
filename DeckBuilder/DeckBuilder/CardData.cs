@@ -47,16 +47,19 @@ namespace DeckBuilder
 
 	class CardData
 	{
-		// todo. 양면 카드 고려 필요.
 		private String cardID;
 		private String cardName;
 		private int[] manaCost;
 		private int convertedManaCost;
-		private bool[] type;
+		private List<CardType> types;
 		private String text;
 		private String cardSet;
 		private Rarity rarity;
 		private String imagePath;
+
+		// todo. 양면 카드 고려 필요.
+		// for 양면카드 or 스플릿 카드
+		private CardData subCardData;
 
 		public CardData()
 		{
@@ -64,15 +67,12 @@ namespace DeckBuilder
 			cardName = "";
 			manaCost = new int[(int)ManaType.MANA_TYPE_MAX];
 			convertedManaCost = 0;
-			type = new bool[(int)CardType.CARD_TYPE_MAX];
+			types = new List<CardType>();
 			text = "";
 			cardSet = "";
 			rarity = Rarity.RARITY_NONE;
 			imagePath = "";
-
-			type = new bool[(int)CardType.CARD_TYPE_MAX];
-			for (int i = (int)CardType.CARD_TYPE_NONE; i < (int)CardType.CARD_TYPE_MAX; ++i)
-				type[i] = false;
+			subCardData = new CardData();
 		}
 
 		~CardData()
@@ -93,11 +93,11 @@ namespace DeckBuilder
 		public void SetCMC(String cmc) { convertedManaCost = Int32.Parse(cmc); }
 		public int GetCMC() { return convertedManaCost; }
 
-		public void SetType(String cardType) { type = ConvertStringToCardType(cardType); }
-		public void SetType(List<String> typeList) { type = ConvertStringToCardType(typeList); }
-		public void SetType(bool[] cardType) { type = cardType; }
-		public bool[] GetCardType() { return type; }
-		public bool IsCardType(CardType cardType) { return type[(int)cardType]; }
+		public void AddType(String cardType) { types.Add(ConvertStringToCardType(cardType)); }
+		public void SetType(List<String> typeList) { types = ConvertStringToCardType(typeList); }
+		public void SetType(List<CardType> cardTypes) { types = cardTypes; }
+		public List<CardType> GetCardTypes() { return types; }
+		public bool IsCardType(CardType cardType) { return types.Contains(cardType); }
 
 		public void SetText(String cardText) { text = cardText; }
 		public String GetText() { return text; }
@@ -112,51 +112,42 @@ namespace DeckBuilder
 		public void SetImagePath(String path) { imagePath = path; }
 		public String GetImagePath() { return imagePath; }
 
-		private bool[] ConvertStringToCardType(String typeStr)
+		private CardType ConvertStringToCardType(String typeStr)
 		{
-			bool[] cardType = new bool[(int)CardType.CARD_TYPE_MAX];
-			for (int i = (int)CardType.CARD_TYPE_NONE; i < (int)CardType.CARD_TYPE_MAX; ++i)
-				cardType[i] = false;
-
 			// todo. 플커랑 대지는 타입이 이상하게 되어 있는 경우가 많음.
 			// ' '공백문자와 -하이픈으로 tokenize해서 넣어주어야 함.
 			// eg. 전설적 플레인즈워커-앙그라스
 			//     기본 대지-숲
-
+			CardType type = CardType.CARD_TYPE_NONE;
 			if (typeStr.ToLower() == "생물")
-				cardType[(int)CardType.CARD_TYPE_CREATURE] = true;
+				type = CardType.CARD_TYPE_CREATURE;
 			else if (typeStr.ToLower() == "집중마법")
-				cardType[(int)CardType.CARD_TYPE_SOCERY] = true;
+				type = CardType.CARD_TYPE_SOCERY;
 			else if (typeStr.ToLower() == "순간마법")
-				cardType[(int)CardType.CARD_TYPE_INSTANT] = true;
+				type = CardType.CARD_TYPE_INSTANT;
 			else if (typeStr.ToLower() == "부여마법")
-				cardType[(int)CardType.CARD_TYPE_ENCHANTMENT] = true;
+				type = CardType.CARD_TYPE_ENCHANTMENT;
 			else if (typeStr.ToLower() == "플레인즈워커")
-				cardType[(int)CardType.CARD_TYPE_PLAINSWALKER] = true;
+				type = CardType.CARD_TYPE_PLAINSWALKER;
 			else if (typeStr.ToLower() == "대지")
-				cardType[(int)CardType.CARD_TYPE_LAND] = true;
+				type = CardType.CARD_TYPE_LAND;
 			else if (typeStr.ToLower() == "마법물체")
-				cardType[(int)CardType.CARD_TYPE_ARTIFACT] = true;
+				type = CardType.CARD_TYPE_ARTIFACT;
 
-			return cardType;
+			return type;
 		}
 
-		private bool[] ConvertStringToCardType(List<String> typeList)
+		private List<CardType> ConvertStringToCardType(List<String> typeStrList)
 		{
-			bool[] cardType = new bool[(int)CardType.CARD_TYPE_MAX];
-			for (int i = (int)CardType.CARD_TYPE_NONE; i < (int)CardType.CARD_TYPE_MAX; ++i)
-				cardType[i] = false;
-
-			CardType type = CardType.CARD_TYPE_NONE;
-			foreach (String strType in typeList)
+			List<CardType> typeList = new List<CardType>();
+			
+			foreach (String strType in typeStrList)
 			{
-				if (strType == "1")
-					cardType[(int)type] = true;
-
-				type++;
+				int num = Int32.Parse(strType);
+				typeList.Add((CardType)num);
 			}
 
-			return cardType;
+			return typeList;
 		}
 
 		private Rarity ConvertStringToRarity(String cardRarity)
