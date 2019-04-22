@@ -71,7 +71,6 @@ namespace DeckBuilder
 			card.SetCardID(cardID);
 
 			GetCardText(in document, ref card);
-			DownLoadCardImage(imagePath, ref card);
 			
 			return card;
 		}
@@ -143,7 +142,7 @@ namespace DeckBuilder
 			return true;
 		}
 
-		private void DownLoadCardImage(String imagePath, ref CardData card)
+		public void DownLoadCardImage(String imagePath, ref CardData card)
 		{
 			StringBuilder url = new StringBuilder("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=");
 			url.Append(card.GetCardID());

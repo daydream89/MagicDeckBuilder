@@ -116,7 +116,12 @@ namespace DeckBuilder
 				CardData card = m_WebLibrary.MakeCardData(doc, imagePath.ToString(), strCardID);
 
 				if (m_CardList[expansion].ContainsKey(card.GetCardName()) == false)
+				{
+					if(File.Exists(imagePath.ToString()) == false)
+						m_WebLibrary.DownLoadCardImage(imagePath.ToString(), ref card);
+
 					m_CardList[expansion].Add(card.GetCardName(), card);
+				}
 
 				double progressRate = (double)m_CardList.Count / (double)m_cardSetNumList[expansion];
 				CardDataProgressBar.Value = (int)(progressRate * 100);
