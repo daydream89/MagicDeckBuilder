@@ -59,6 +59,7 @@ namespace DeckBuilder
 
 		// todo. 양면 카드 고려 필요.
 		// for 양면카드 or 스플릿 카드
+		private bool isSubCardExist;
 		private CardData subCardData;
 
 		public CardData()
@@ -72,7 +73,7 @@ namespace DeckBuilder
 			cardSet = "";
 			rarity = Rarity.RARITY_NONE;
 			imagePath = "";
-			subCardData = new CardData();
+			isSubCardExist = false;
 		}
 
 		~CardData()
