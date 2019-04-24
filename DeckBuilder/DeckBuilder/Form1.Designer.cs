@@ -42,6 +42,10 @@
 			this.DeckCardImg = new System.Windows.Forms.PictureBox();
 			this.DeckOptionGB = new System.Windows.Forms.GroupBox();
 			this.DeckList = new System.Windows.Forms.ListBox();
+			this.ApplyDeckListBtn = new System.Windows.Forms.Button();
+			this.AddCardNumComboBox = new System.Windows.Forms.ComboBox();
+			this.RemoveCardNumComboBox = new System.Windows.Forms.ComboBox();
+			this.RemoveDeckListCardBtn = new System.Windows.Forms.Button();
 			this.CardDatabaseGB.SuspendLayout();
 			this.ListCardImgGB.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ListCardImg)).BeginInit();
@@ -53,6 +57,8 @@
 			// 
 			// CardDatabaseGB
 			// 
+			this.CardDatabaseGB.Controls.Add(this.AddCardNumComboBox);
+			this.CardDatabaseGB.Controls.Add(this.ApplyDeckListBtn);
 			this.CardDatabaseGB.Controls.Add(this.ListCardImgGB);
 			this.CardDatabaseGB.Controls.Add(this.CardOptionGB);
 			this.CardDatabaseGB.Controls.Add(this.CardListBox);
@@ -139,12 +145,14 @@
 			this.CardListBox.ItemHeight = 15;
 			this.CardListBox.Location = new System.Drawing.Point(6, 24);
 			this.CardListBox.Name = "CardListBox";
-			this.CardListBox.Size = new System.Drawing.Size(180, 499);
+			this.CardListBox.Size = new System.Drawing.Size(180, 454);
 			this.CardListBox.TabIndex = 0;
 			this.CardListBox.SelectedIndexChanged += new System.EventHandler(this.CardListBox_ItemSelected);
 			// 
 			// DeckBuilderGB
 			// 
+			this.DeckBuilderGB.Controls.Add(this.RemoveDeckListCardBtn);
+			this.DeckBuilderGB.Controls.Add(this.RemoveCardNumComboBox);
 			this.DeckBuilderGB.Controls.Add(this.DeckCardImgGB);
 			this.DeckBuilderGB.Controls.Add(this.DeckOptionGB);
 			this.DeckBuilderGB.Controls.Add(this.DeckList);
@@ -188,14 +196,56 @@
 			this.DeckList.ItemHeight = 15;
 			this.DeckList.Location = new System.Drawing.Point(6, 24);
 			this.DeckList.Name = "DeckList";
-			this.DeckList.Size = new System.Drawing.Size(180, 499);
+			this.DeckList.Size = new System.Drawing.Size(180, 454);
 			this.DeckList.TabIndex = 0;
+			// 
+			// ApplyDeckListBtn
+			// 
+			this.ApplyDeckListBtn.Font = new System.Drawing.Font("굴림", 8F);
+			this.ApplyDeckListBtn.Location = new System.Drawing.Point(101, 485);
+			this.ApplyDeckListBtn.Name = "ApplyDeckListBtn";
+			this.ApplyDeckListBtn.Size = new System.Drawing.Size(85, 36);
+			this.ApplyDeckListBtn.TabIndex = 4;
+			this.ApplyDeckListBtn.Text = "덱리스트로";
+			this.ApplyDeckListBtn.UseVisualStyleBackColor = true;
+			this.ApplyDeckListBtn.Click += new System.EventHandler(this.ApplyDeckListBtn_Click);
+			// 
+			// AddCardNumComboBox
+			// 
+			this.AddCardNumComboBox.Font = new System.Drawing.Font("굴림", 13F);
+			this.AddCardNumComboBox.FormattingEnabled = true;
+			this.AddCardNumComboBox.Location = new System.Drawing.Point(7, 487);
+			this.AddCardNumComboBox.Name = "AddCardNumComboBox";
+			this.AddCardNumComboBox.Size = new System.Drawing.Size(88, 30);
+			this.AddCardNumComboBox.TabIndex = 5;
+			this.AddCardNumComboBox.Text = "수량";
+			// 
+			// RemoveCardNumComboBox
+			// 
+			this.RemoveCardNumComboBox.Font = new System.Drawing.Font("굴림", 13F);
+			this.RemoveCardNumComboBox.FormattingEnabled = true;
+			this.RemoveCardNumComboBox.Location = new System.Drawing.Point(6, 487);
+			this.RemoveCardNumComboBox.Name = "RemoveCardNumComboBox";
+			this.RemoveCardNumComboBox.Size = new System.Drawing.Size(88, 30);
+			this.RemoveCardNumComboBox.TabIndex = 6;
+			this.RemoveCardNumComboBox.Text = "수량";
+			// 
+			// RemoveDeckListCardBtn
+			// 
+			this.RemoveDeckListCardBtn.Font = new System.Drawing.Font("굴림", 8F);
+			this.RemoveDeckListCardBtn.Location = new System.Drawing.Point(100, 487);
+			this.RemoveDeckListCardBtn.Name = "RemoveDeckListCardBtn";
+			this.RemoveDeckListCardBtn.Size = new System.Drawing.Size(85, 36);
+			this.RemoveDeckListCardBtn.TabIndex = 6;
+			this.RemoveDeckListCardBtn.Text = "제거";
+			this.RemoveDeckListCardBtn.UseVisualStyleBackColor = true;
+			this.RemoveDeckListCardBtn.Click += new System.EventHandler(this.RemoveDeckListCardBtn_Click);
 			// 
 			// DeckBuilder
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(907, 554);
+			this.ClientSize = new System.Drawing.Size(906, 554);
 			this.Controls.Add(this.DeckBuilderGB);
 			this.Controls.Add(this.CardDatabaseGB);
 			this.Name = "DeckBuilder";
@@ -228,6 +278,10 @@
 		private System.Windows.Forms.PictureBox ListCardImg;
 		private System.Windows.Forms.PictureBox DeckCardImg;
 		private System.Windows.Forms.ComboBox ExpansionComboBox;
+		private System.Windows.Forms.ComboBox AddCardNumComboBox;
+		private System.Windows.Forms.Button ApplyDeckListBtn;
+		private System.Windows.Forms.Button RemoveDeckListCardBtn;
+		private System.Windows.Forms.ComboBox RemoveCardNumComboBox;
 	}
 }
 

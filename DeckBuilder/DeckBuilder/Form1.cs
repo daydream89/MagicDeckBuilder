@@ -24,6 +24,18 @@ namespace DeckBuilder
 		EXPANSION_MAX,
 	}
 
+	public struct DeckCardData
+	{
+		private CardData cardData;
+		private int num;
+
+		public void SetCardData(CardData data) { cardData = data; }
+		public CardData GetCardData() { return cardData; }
+
+		public void SetCardNum(int n) { num = n; }
+		public int GetCardNum() { return num; }
+	}
+
 	public partial class DeckBuilder : Form
 	{
 		private String m_cardDataDir;
@@ -33,6 +45,8 @@ namespace DeckBuilder
 
 		private WebLibrary m_WebLibrary;
 		private Dictionary<eExpansion, Dictionary<String, CardData>> m_CardList;
+		private Dictionary<String, DeckCardData> m_DeckList;
+		private CardData m_curSelectedCard;
 
 		private String GetFullNameFromExpansionEnum(eExpansion expansion)
 		{
@@ -81,20 +95,38 @@ namespace DeckBuilder
 				m_CardList.Add(expansion, cardList);
 			}
 
+			m_DeckList = new Dictionary<string, DeckCardData>();
+
 			// load settings & card data
+			// load가 안된다...?
 			LoadSettings();
 			LoadCardData();
 			RefreshCardList();
 
 			SetExpansionComboBox();
+			SetCardNumComboBox();
 		}
 
-		public void SetExpansionComboBox()
+		private void SetExpansionComboBox()
 		{
 			for(eExpansion expansion = eExpansion.XLN; expansion != eExpansion.EXPANSION_MAX; expansion++)
 				ExpansionComboBox.Items.Add(GetFullNameFromExpansionEnum(expansion));
 			
 			ExpansionComboBox.SelectedIndex = 0;
+		}
+
+		private void SetCardNumComboBox()
+		{
+			AddCardNumComboBox.Items.Add("수량");
+			RemoveCardNumComboBox.Items.Add("수량");
+			for (int i = 0; i < 4; ++i)
+			{
+				AddCardNumComboBox.Items.Add(i+1);
+				RemoveCardNumComboBox.Items.Add(i+1);
+			}
+
+			AddCardNumComboBox.SelectedIndex = 0;
+			RemoveCardNumComboBox.SelectedIndex = 0;
 		}
 
 		public void CrawlingCard()
@@ -123,7 +155,7 @@ namespace DeckBuilder
 					m_CardList[expansion].Add(card.GetCardName(), card);
 				}
 
-				double progressRate = (double)m_CardList.Count / (double)m_cardSetNumList[expansion];
+				double progressRate = (double)m_CardList[expansion].Count / (double)m_cardSetNumList[expansion];
 				CardDataProgressBar.Value = (int)(progressRate * 100);
 			}
 		}
@@ -140,6 +172,8 @@ namespace DeckBuilder
 
 		private void RefreshCardList()
 		{
+			CardListBox.Items.Clear();
+
 			foreach (KeyValuePair<eExpansion, Dictionary<String, CardData>> cardList in m_CardList)
 			{
 				foreach (KeyValuePair<String, CardData> card in cardList.Value)
@@ -151,18 +185,50 @@ namespace DeckBuilder
 
 		private void CardListBox_ItemSelected(object sender, EventArgs e)
 		{
-			String imagePath = "";
 			String name = CardListBox.SelectedItem as String;
 			foreach (KeyValuePair<eExpansion, Dictionary<String, CardData>> cardList in m_CardList)
-				if(cardList.Value.ContainsKey(name))
-					imagePath = cardList.Value[name].GetImagePath();
+			{
+				if (cardList.Value.ContainsKey(name))
+				{
+					m_curSelectedCard = cardList.Value[name];
+					break;
+				}
+			}
 
-			ListCardImg.Image = Image.FromFile(imagePath);
+			ListCardImg.Image = Image.FromFile(m_curSelectedCard.GetImagePath());
 		}
 
 		private void DeckBuilder_FormClosed(object sender, FormClosedEventArgs e)
 		{
 			SaveCardData();
+		}
+
+		private void ApplyDeckListBtn_Click(object sender, EventArgs e)
+		{
+			DeckCardData deckCardData = new DeckCardData();
+			deckCardData.SetCardData(m_curSelectedCard);
+			deckCardData.SetCardNum(AddCardNumComboBox.SelectedIndex);
+			m_DeckList.Add(m_curSelectedCard.GetCardName(), deckCardData);
+			
+			RefreshDeckList();
+		}
+
+		private void RemoveDeckListCardBtn_Click(object sender, EventArgs e)
+		{
+			// 제거 가능한 수량인지 체크 필요.
+
+			String text = DeckList.SelectedItem as String;
+			String[] tok = text.Split('\t');
+			m_DeckList.Remove(tok[0]);
+
+			RefreshDeckList();
+		}
+
+		private void RefreshDeckList()
+		{
+			DeckList.Items.Clear();
+			foreach (KeyValuePair<String, DeckCardData> cardData in m_DeckList)
+				DeckList.Items.Add(cardData.Key + "\t" + cardData.Value.GetCardNum().ToString());
 		}
 	}
 }

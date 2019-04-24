@@ -39,10 +39,14 @@ namespace DeckBuilder
 					for (ManaType mana = 0; mana < ManaType.MANA_TYPE_MAX; mana++)
 						strMana.Append(cost[(int)mana].ToString());
 
-					List<CardType> typeList = card.Value.GetCardTypes();
+					List<String> typeList = card.Value.GetCardTypes();
 					StringBuilder strTypes = new StringBuilder();
-					foreach(CardType type in typeList)
-						strTypes.Append(((int)type).ToString());
+					foreach (String type in typeList)
+					{
+						strTypes.Append(type);
+						if(typeList.Last() != type)
+							strTypes.Append(" ");
+					}
 
 					writer.WriteStartElement("Card");
 					writer.WriteAttributeString("ID", card.Value.GetCardID());
@@ -72,7 +76,7 @@ namespace DeckBuilder
 			for (eExpansion expansion = eExpansion.XLN; expansion != eExpansion.EXPANSION_MAX; expansion++)
 			{
 				StringBuilder filePath = new StringBuilder(m_cardDataDir);
-				filePath.Append(GetFullNameFromExpansionEnum(expansion));
+				filePath.Append(expansion.ToString());
 				filePath.Append(".xml");
 
 				if (File.Exists(filePath.ToString()) == false)
@@ -104,10 +108,7 @@ namespace DeckBuilder
 					value.Clear();
 
 					value.Append(node.Attributes["Type"].Value);
-					List<String> typeList = new List<string>();
-					for (int i = 0; i < value.Length; ++i)
-						typeList.Add(value.ToString().Substring(i, 1));
-					cardData.SetType(typeList);
+					cardData.SetType(value.ToString());
 					value.Clear();
 
 					value.Append(node.Attributes["Text"].Value);

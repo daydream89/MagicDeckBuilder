@@ -6,22 +6,7 @@ using System.Threading.Tasks;
 
 namespace DeckBuilder
 {
-	enum CardType
-	{
-		CARD_TYPE_NONE = 0,
-
-		CARD_TYPE_CREATURE,
-		CARD_TYPE_SOCERY,
-		CARD_TYPE_INSTANT,
-		CARD_TYPE_ENCHANTMENT,
-		CARD_TYPE_ARTIFACT,
-		CARD_TYPE_PLAINSWALKER,
-		CARD_TYPE_LAND,
-		
-		CARD_TYPE_MAX,
-	}
-
-	enum ManaType
+	public enum ManaType
 	{
 		MANA_TYPE_COMMON = 0,
 		MANA_TYPE_WHITE,
@@ -33,7 +18,7 @@ namespace DeckBuilder
 		MANA_TYPE_MAX,
 	}
 
-	enum Rarity
+	public enum Rarity
 	{
 		RARITY_NONE = 0,
 
@@ -45,13 +30,13 @@ namespace DeckBuilder
 		RARITY_MAX,
 	}
 
-	class CardData
+	public class CardData
 	{
 		private String cardID;
 		private String cardName;
 		private int[] manaCost;
 		private int convertedManaCost;
-		private List<CardType> types;
+		private List<String> types;
 		private String text;
 		private String cardSet;
 		private Rarity rarity;
@@ -68,7 +53,7 @@ namespace DeckBuilder
 			cardName = "";
 			manaCost = new int[(int)ManaType.MANA_TYPE_MAX];
 			convertedManaCost = 0;
-			types = new List<CardType>();
+			types = new List<String>();
 			text = "";
 			cardSet = "";
 			rarity = Rarity.RARITY_NONE;
@@ -94,11 +79,10 @@ namespace DeckBuilder
 		public void SetCMC(String cmc) { convertedManaCost = Int32.Parse(cmc); }
 		public int GetCMC() { return convertedManaCost; }
 
-		public void AddType(String cardType) { types.Add(ConvertStringToCardType(cardType)); }
-		public void SetType(List<String> typeList) { types = ConvertStringToCardType(typeList); }
-		public void SetType(List<CardType> cardTypes) { types = cardTypes; }
-		public List<CardType> GetCardTypes() { return types; }
-		public bool IsCardType(CardType cardType) { return types.Contains(cardType); }
+		public void SetType(String cardType) { types = ConvertStringToCardType(cardType); }
+		public void SetType(List<String> cardTypes) { types = cardTypes; }
+		public List<String> GetCardTypes() { return types; }
+		public bool IsCardType(String cardType) { return types.Contains(cardType); }
 
 		public void SetText(String cardText) { text = cardText; }
 		public String GetText() { return text; }
@@ -113,41 +97,15 @@ namespace DeckBuilder
 		public void SetImagePath(String path) { imagePath = path; }
 		public String GetImagePath() { return imagePath; }
 
-		private CardType ConvertStringToCardType(String typeStr)
+		// todo. 각종 convert함수들 class외부로 빼면 좋겠다
+		private List<String> ConvertStringToCardType(String typeStr)
 		{
-			// todo. 플커랑 대지는 타입이 이상하게 되어 있는 경우가 많음.
-			// ' '공백문자와 -하이픈으로 tokenize해서 넣어주어야 함.
-			// eg. 전설적 플레인즈워커-앙그라스
-			//     기본 대지-숲
-			CardType type = CardType.CARD_TYPE_NONE;
-			if (typeStr.ToLower() == "생물")
-				type = CardType.CARD_TYPE_CREATURE;
-			else if (typeStr.ToLower() == "집중마법")
-				type = CardType.CARD_TYPE_SOCERY;
-			else if (typeStr.ToLower() == "순간마법")
-				type = CardType.CARD_TYPE_INSTANT;
-			else if (typeStr.ToLower() == "부여마법")
-				type = CardType.CARD_TYPE_ENCHANTMENT;
-			else if (typeStr.ToLower() == "플레인즈워커")
-				type = CardType.CARD_TYPE_PLAINSWALKER;
-			else if (typeStr.ToLower() == "대지")
-				type = CardType.CARD_TYPE_LAND;
-			else if (typeStr.ToLower() == "마법물체")
-				type = CardType.CARD_TYPE_ARTIFACT;
-
-			return type;
-		}
-
-		private List<CardType> ConvertStringToCardType(List<String> typeStrList)
-		{
-			List<CardType> typeList = new List<CardType>();
+			List<String> typeList = new List<string>();
+			String seperator = " -";
+			String[] tokStr = typeStr.Split(seperator.ToCharArray());
+			foreach (String str in tokStr)
+				typeList.Add(str);
 			
-			foreach (String strType in typeStrList)
-			{
-				int num = Int32.Parse(strType);
-				typeList.Add((CardType)num);
-			}
-
 			return typeList;
 		}
 
