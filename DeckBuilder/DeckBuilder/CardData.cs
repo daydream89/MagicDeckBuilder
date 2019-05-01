@@ -34,6 +34,7 @@ namespace DeckBuilder
 	{
 		private String cardID;
 		private String cardName;
+		// todo. split mana 고려 필요.
 		private int[] manaCost;
 		private int convertedManaCost;
 		private List<String> types;

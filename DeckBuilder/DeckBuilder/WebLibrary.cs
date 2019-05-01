@@ -99,21 +99,19 @@ namespace DeckBuilder
 				}
 				else if (elementType == eCardElement.ELEMENT_COST)
 				{
-					string text = cardElement.InnerHtml;
-					string[] textList = text.Split('"');
+					HtmlElement parentElement = cardElement.Parent;
+					string text = parentElement.InnerHtml;
+					String[] textList = text.Split(' ');
 
-					bool isCost = false;
-					List<string> manaCostList = new List<string>();
-					foreach (string temp in textList)
+					List<String> manaCostList = new List<string>();
+					foreach (String str in textList)
 					{
-						if (isCost == true)
+						if (str.Contains("alt=") == true)
 						{
-							manaCostList.Add(temp);
-							isCost = false;
+							String[] tok = str.Split('=');
+							if (tok[1] != null)
+								manaCostList.Add(tok[1]);
 						}
-
-						if (temp.ToLower() == " alt=")
-							isCost = true;
 					}
 
 					if (0 < manaCostList.Count)

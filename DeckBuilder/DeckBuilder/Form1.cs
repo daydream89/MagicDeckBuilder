@@ -38,6 +38,8 @@ namespace DeckBuilder
 
 	public partial class DeckBuilder : Form
 	{
+		const int MAX_CARD_NUM = 4;
+
 		private String m_cardDataDir;
 		private String m_cardImageDir;
 		private Dictionary<eExpansion, int> m_setStartIdList;
@@ -98,7 +100,6 @@ namespace DeckBuilder
 			m_DeckList = new Dictionary<string, DeckCardData>();
 
 			// load settings & card data
-			// load가 안된다...?
 			LoadSettings();
 			LoadCardData();
 			RefreshCardList();
@@ -119,7 +120,7 @@ namespace DeckBuilder
 		{
 			AddCardNumComboBox.Items.Add("수량");
 			RemoveCardNumComboBox.Items.Add("수량");
-			for (int i = 0; i < 4; ++i)
+			for (int i = 0; i < MAX_CARD_NUM; ++i)
 			{
 				AddCardNumComboBox.Items.Add(i+1);
 				RemoveCardNumComboBox.Items.Add(i+1);
@@ -205,21 +206,58 @@ namespace DeckBuilder
 
 		private void ApplyDeckListBtn_Click(object sender, EventArgs e)
 		{
-			DeckCardData deckCardData = new DeckCardData();
-			deckCardData.SetCardData(m_curSelectedCard);
-			deckCardData.SetCardNum(AddCardNumComboBox.SelectedIndex);
-			m_DeckList.Add(m_curSelectedCard.GetCardName(), deckCardData);
+			if (AddCardNumComboBox.SelectedIndex == 0)
+				return;
+
+			String cardName = m_curSelectedCard.GetCardName();
+			if (m_DeckList.ContainsKey(cardName) == true)
+			{
+				int cardNum = m_DeckList[cardName].GetCardNum();
+				if (cardNum + AddCardNumComboBox.SelectedIndex <= MAX_CARD_NUM)
+				{
+					DeckCardData deckCard = m_DeckList[cardName];
+					deckCard.SetCardNum(cardNum + AddCardNumComboBox.SelectedIndex);
+					m_DeckList[cardName] = deckCard;
+				}
+				else
+					return;
+			}
+			else
+			{
+				DeckCardData deckCardData = new DeckCardData();
+				deckCardData.SetCardData(m_curSelectedCard);
+				deckCardData.SetCardNum(AddCardNumComboBox.SelectedIndex);
+				m_DeckList.Add(cardName, deckCardData);
+			}
 			
 			RefreshDeckList();
 		}
 
 		private void RemoveDeckListCardBtn_Click(object sender, EventArgs e)
 		{
-			// 제거 가능한 수량인지 체크 필요.
+			if (DeckList.SelectedItem == null || RemoveCardNumComboBox.SelectedIndex == 0)
+				return;
 
 			String text = DeckList.SelectedItem as String;
 			String[] tok = text.Split('\t');
-			m_DeckList.Remove(tok[0]);
+			if (tok[1] == null)
+				return;
+
+			String cardName = tok[0];
+			int cardNum = Int32.Parse(tok[1]);
+			if (RemoveCardNumComboBox.SelectedIndex < cardNum)
+			{
+				if (m_DeckList.ContainsKey(cardName) == true)
+				{
+					DeckCardData deckCard = m_DeckList[cardName];
+					deckCard.SetCardNum(cardNum - RemoveCardNumComboBox.SelectedIndex);
+					m_DeckList[cardName] = deckCard;
+				}
+			}
+			else if (RemoveCardNumComboBox.SelectedIndex == cardNum)
+				m_DeckList.Remove(cardName);
+			else
+				return;
 
 			RefreshDeckList();
 		}
