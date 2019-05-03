@@ -33,11 +33,15 @@ namespace DeckBuilder
 
 				foreach (KeyValuePair<String, CardData> card in cardList.Value)
 				{
-					// todo. CardData 내부에서만 array로 관리하고 해당 array가 밖으로 나오지 않도록 하자.
-					int[] cost = card.Value.GetManaCost();
+					Dictionary<ManaType, int> cost = card.Value.GetManaCost();
 					StringBuilder strMana = new StringBuilder();
-					for (ManaType mana = 0; mana < ManaType.MANA_TYPE_MAX; mana++)
-						strMana.Append(cost[(int)mana].ToString());
+					for (ManaType type = 0; type < ManaType.MANA_TYPE_MAX; ++type)
+					{
+						if (cost.ContainsKey(type))
+							strMana.Append(cost[type].ToString());
+						else
+							strMana.Append("0");
+					}
 
 					List<String> typeList = card.Value.GetCardTypes();
 					StringBuilder strTypes = new StringBuilder();

@@ -8,12 +8,25 @@ namespace DeckBuilder
 {
 	public enum ManaType
 	{
-		MANA_TYPE_COMMON = 0,
-		MANA_TYPE_WHITE,
-		MANA_TYPE_RED,
-		MANA_TYPE_BLUE,
-		MANA_TYPE_GREEN,
-		MANA_TYPE_BLACK,
+		COMMON = 0,
+		WHITE,
+		RED,
+		BLUE,
+		GREEN,
+		BLACK,
+
+		WHITE_RED,
+		WHITE_BLUE,
+		WHITE_GREEN,
+		WHITE_BLACK,
+		RED_BLUE,
+		RED_GREEN,
+		RED_BLACK,
+		BLUE_GREEN,
+		BLUE_BLACK,
+		GREEN_BLACK,
+
+		COMMON_X,
 
 		MANA_TYPE_MAX,
 	}
@@ -34,8 +47,7 @@ namespace DeckBuilder
 	{
 		private String cardID;
 		private String cardName;
-		// todo. split mana 고려 필요.
-		private int[] manaCost;
+		private Dictionary<ManaType, int> manaCost;
 		private int convertedManaCost;
 		private List<String> types;
 		private String text;
@@ -52,7 +64,7 @@ namespace DeckBuilder
 		{
 			cardID = "";
 			cardName = "";
-			manaCost = new int[(int)ManaType.MANA_TYPE_MAX];
+			manaCost = new Dictionary<ManaType, int>();
 			convertedManaCost = 0;
 			types = new List<String>();
 			text = "";
@@ -73,9 +85,9 @@ namespace DeckBuilder
 		public void SetCardName(String name) { cardName = name; }
 		public String GetCardName() { return cardName; }
 
-		public void SetManaCost(List<String> costList) { manaCost = ConvertStringListToManaCost(costList); }
-		public void SetManaCost(String costList) { manaCost = ConvertStringListToManaCost(costList); }
-		public int[] GetManaCost() { return manaCost; }
+		public void SetManaCost(List<String> costList) { ConvertStringListToManaCost(costList, ref manaCost); }
+		public void SetManaCost(String costList) { ConvertStringToManaCost(costList, ref manaCost); }
+		public Dictionary<ManaType, int> GetManaCost() { return manaCost; }
 
 		public void SetCMC(String cmc) { convertedManaCost = Int32.Parse(cmc); }
 		public int GetCMC() { return convertedManaCost; }
@@ -124,37 +136,80 @@ namespace DeckBuilder
 				return Rarity.RARITY_NONE;
 		}
 
-		private int[] ConvertStringListToManaCost(List<String> costList)
+		private void ConvertStringListToManaCost(List<String> costList, ref Dictionary<ManaType, int> mana)
 		{
-			int[] manaCost = new int[(int)ManaType.MANA_TYPE_MAX];
-
-			foreach(String cost in costList)
+			foreach(String str in costList)
 			{
-				if (cost.ToLower() == "white")
-					manaCost[(int)ManaType.MANA_TYPE_WHITE]++;
-				else if (cost.ToLower() == "red")
-					manaCost[(int)ManaType.MANA_TYPE_RED]++;
-				else if (cost.ToLower() == "blue")
-					manaCost[(int)ManaType.MANA_TYPE_BLUE]++;
-				else if (cost.ToLower() == "green")
-					manaCost[(int)ManaType.MANA_TYPE_GREEN]++;
-				else if (cost.ToLower() == "black")
-					manaCost[(int)ManaType.MANA_TYPE_BLACK]++;
+				String strLower = str.ToLower();
+				int cost = 1;
+				ManaType type = ManaType.MANA_TYPE_MAX;
+				if (strLower == "white")
+					type = ManaType.WHITE;
+				else if (strLower == "red")
+					type = ManaType.RED;
+				else if (strLower == "blue")
+					type = ManaType.BLUE;
+				else if (strLower == "green")
+					type = ManaType.GREEN;
+				else if (strLower == "black")
+					type = ManaType.BLACK;
 				else
-					manaCost[(int)ManaType.MANA_TYPE_COMMON] = Int32.Parse(cost);
-			}
+				{
+					if (strLower == "white or red" || strLower == "red or white")
+						type = ManaType.WHITE_RED;
+					else if (strLower == "white or blue" || strLower == "blue or white")
+						type = ManaType.WHITE_BLUE;
+					else if (strLower == "white or green" || strLower == "green or white")
+						type = ManaType.WHITE_GREEN;
+					else if (strLower == "white or black" || strLower == "black or white")
+						type = ManaType.WHITE_BLACK;
+					else if (strLower == "blue or red" || strLower == "red or blue")
+						type = ManaType.RED_BLUE;
+					else if (strLower == "green or red" || strLower == "red or green")
+						type = ManaType.RED_GREEN;
+					else if (strLower == "red or black" || strLower == "black or red")
+						type = ManaType.RED_BLACK;
+					else if (strLower == "blue or green" || strLower == "green or blue")
+						type = ManaType.BLUE_GREEN;
+					else if (strLower == "blue or black" || strLower == "black or blue")
+						type = ManaType.BLUE_BLACK;
+					else if (strLower == "green or black" || strLower == "black or green")
+						type = ManaType.GREEN_BLACK;
+					else if (strLower == "variable colorless")
+						type = ManaType.COMMON_X;
+					else
+					{
+						type = ManaType.COMMON;
+						cost = Int32.Parse(str);
+					}
+				}
 
-			return manaCost;
+				if (mana.ContainsKey(type) == true)
+				{
+					int value = mana[type];
+					mana[type] = value + 1;
+				}
+				else
+					mana.Add(type, cost);
+			}
 		}
 
-		private int[] ConvertStringListToManaCost(String strCost)
+		private void ConvertStringToManaCost(String strCost, ref Dictionary<ManaType, int> mana)
 		{
-			int[] manaCost = new int[(int)ManaType.MANA_TYPE_MAX];
-
-			for(ManaType mana = ManaType.MANA_TYPE_COMMON; mana < ManaType.MANA_TYPE_MAX; mana++)
-				manaCost[(int)mana] = Int32.Parse(strCost.Substring((int)mana, 1));
-
-			return manaCost;
+			for (ManaType type = ManaType.COMMON; type < ManaType.MANA_TYPE_MAX; ++type)
+			{
+				if (mana.ContainsKey(type) == true)
+				{
+					int value = mana[type];
+					mana[type] = value + 1;
+				}
+				else
+				{
+					int cost = Int32.Parse(strCost.Substring((int)type, 1));
+					if(cost != 0)
+						mana.Add(type, cost);
+				}
+			}
 		}
 	}
 }
