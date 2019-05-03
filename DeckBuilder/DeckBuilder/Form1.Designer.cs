@@ -29,6 +29,8 @@
 		private void InitializeComponent()
 		{
 			this.CardDatabaseGB = new System.Windows.Forms.GroupBox();
+			this.AddCardNumComboBox = new System.Windows.Forms.ComboBox();
+			this.ApplyDeckListBtn = new System.Windows.Forms.Button();
 			this.ListCardImgGB = new System.Windows.Forms.GroupBox();
 			this.ListCardImg = new System.Windows.Forms.PictureBox();
 			this.CardOptionGB = new System.Windows.Forms.GroupBox();
@@ -38,14 +40,15 @@
 			this.CrawlingCardBtn = new System.Windows.Forms.Button();
 			this.CardListBox = new System.Windows.Forms.ListBox();
 			this.DeckBuilderGB = new System.Windows.Forms.GroupBox();
+			this.RemoveDeckListCardBtn = new System.Windows.Forms.Button();
+			this.RemoveCardNumComboBox = new System.Windows.Forms.ComboBox();
 			this.DeckCardImgGB = new System.Windows.Forms.GroupBox();
 			this.DeckCardImg = new System.Windows.Forms.PictureBox();
 			this.DeckOptionGB = new System.Windows.Forms.GroupBox();
+			this.LoadDeckListBtn = new System.Windows.Forms.Button();
+			this.DeckListCopyBtn = new System.Windows.Forms.Button();
+			this.DeckListSaveBtn = new System.Windows.Forms.Button();
 			this.DeckList = new System.Windows.Forms.ListBox();
-			this.ApplyDeckListBtn = new System.Windows.Forms.Button();
-			this.AddCardNumComboBox = new System.Windows.Forms.ComboBox();
-			this.RemoveCardNumComboBox = new System.Windows.Forms.ComboBox();
-			this.RemoveDeckListCardBtn = new System.Windows.Forms.Button();
 			this.CardDatabaseGB.SuspendLayout();
 			this.ListCardImgGB.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ListCardImg)).BeginInit();
@@ -53,6 +56,7 @@
 			this.DeckBuilderGB.SuspendLayout();
 			this.DeckCardImgGB.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.DeckCardImg)).BeginInit();
+			this.DeckOptionGB.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// CardDatabaseGB
@@ -68,6 +72,27 @@
 			this.CardDatabaseGB.TabIndex = 0;
 			this.CardDatabaseGB.TabStop = false;
 			this.CardDatabaseGB.Text = "Card Database";
+			// 
+			// AddCardNumComboBox
+			// 
+			this.AddCardNumComboBox.Font = new System.Drawing.Font("굴림", 13F);
+			this.AddCardNumComboBox.FormattingEnabled = true;
+			this.AddCardNumComboBox.Location = new System.Drawing.Point(7, 487);
+			this.AddCardNumComboBox.Name = "AddCardNumComboBox";
+			this.AddCardNumComboBox.Size = new System.Drawing.Size(88, 30);
+			this.AddCardNumComboBox.TabIndex = 5;
+			this.AddCardNumComboBox.Text = "수량";
+			// 
+			// ApplyDeckListBtn
+			// 
+			this.ApplyDeckListBtn.Font = new System.Drawing.Font("굴림", 8F);
+			this.ApplyDeckListBtn.Location = new System.Drawing.Point(101, 485);
+			this.ApplyDeckListBtn.Name = "ApplyDeckListBtn";
+			this.ApplyDeckListBtn.Size = new System.Drawing.Size(85, 36);
+			this.ApplyDeckListBtn.TabIndex = 4;
+			this.ApplyDeckListBtn.Text = "덱리스트로";
+			this.ApplyDeckListBtn.UseVisualStyleBackColor = true;
+			this.ApplyDeckListBtn.Click += new System.EventHandler(this.ApplyDeckListBtn_Click);
 			// 
 			// ListCardImgGB
 			// 
@@ -85,7 +110,7 @@
 			this.ListCardImg.Margin = new System.Windows.Forms.Padding(0);
 			this.ListCardImg.Name = "ListCardImg";
 			this.ListCardImg.Size = new System.Drawing.Size(223, 321);
-			this.ListCardImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+			this.ListCardImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
 			this.ListCardImg.TabIndex = 0;
 			this.ListCardImg.TabStop = false;
 			// 
@@ -163,6 +188,27 @@
 			this.DeckBuilderGB.TabStop = false;
 			this.DeckBuilderGB.Text = "Deck Builder";
 			// 
+			// RemoveDeckListCardBtn
+			// 
+			this.RemoveDeckListCardBtn.Font = new System.Drawing.Font("굴림", 8F);
+			this.RemoveDeckListCardBtn.Location = new System.Drawing.Point(100, 487);
+			this.RemoveDeckListCardBtn.Name = "RemoveDeckListCardBtn";
+			this.RemoveDeckListCardBtn.Size = new System.Drawing.Size(85, 36);
+			this.RemoveDeckListCardBtn.TabIndex = 6;
+			this.RemoveDeckListCardBtn.Text = "제거";
+			this.RemoveDeckListCardBtn.UseVisualStyleBackColor = true;
+			this.RemoveDeckListCardBtn.Click += new System.EventHandler(this.RemoveDeckListCardBtn_Click);
+			// 
+			// RemoveCardNumComboBox
+			// 
+			this.RemoveCardNumComboBox.Font = new System.Drawing.Font("굴림", 13F);
+			this.RemoveCardNumComboBox.FormattingEnabled = true;
+			this.RemoveCardNumComboBox.Location = new System.Drawing.Point(6, 487);
+			this.RemoveCardNumComboBox.Name = "RemoveCardNumComboBox";
+			this.RemoveCardNumComboBox.Size = new System.Drawing.Size(88, 30);
+			this.RemoveCardNumComboBox.TabIndex = 6;
+			this.RemoveCardNumComboBox.Text = "수량";
+			// 
 			// DeckCardImgGB
 			// 
 			this.DeckCardImgGB.Controls.Add(this.DeckCardImg);
@@ -178,17 +224,49 @@
 			this.DeckCardImg.Location = new System.Drawing.Point(7, 25);
 			this.DeckCardImg.Name = "DeckCardImg";
 			this.DeckCardImg.Size = new System.Drawing.Size(223, 324);
+			this.DeckCardImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
 			this.DeckCardImg.TabIndex = 0;
 			this.DeckCardImg.TabStop = false;
 			// 
 			// DeckOptionGB
 			// 
+			this.DeckOptionGB.Controls.Add(this.LoadDeckListBtn);
+			this.DeckOptionGB.Controls.Add(this.DeckListCopyBtn);
+			this.DeckOptionGB.Controls.Add(this.DeckListSaveBtn);
 			this.DeckOptionGB.Location = new System.Drawing.Point(192, 24);
 			this.DeckOptionGB.Name = "DeckOptionGB";
 			this.DeckOptionGB.Size = new System.Drawing.Size(238, 144);
 			this.DeckOptionGB.TabIndex = 1;
 			this.DeckOptionGB.TabStop = false;
 			this.DeckOptionGB.Text = "Option";
+			// 
+			// LoadDeckListBtn
+			// 
+			this.LoadDeckListBtn.Location = new System.Drawing.Point(115, 24);
+			this.LoadDeckListBtn.Name = "LoadDeckListBtn";
+			this.LoadDeckListBtn.Size = new System.Drawing.Size(75, 23);
+			this.LoadDeckListBtn.TabIndex = 2;
+			this.LoadDeckListBtn.Text = "불러오기";
+			this.LoadDeckListBtn.UseVisualStyleBackColor = true;
+			// 
+			// DeckListCopyBtn
+			// 
+			this.DeckListCopyBtn.Location = new System.Drawing.Point(7, 54);
+			this.DeckListCopyBtn.Name = "DeckListCopyBtn";
+			this.DeckListCopyBtn.Size = new System.Drawing.Size(183, 23);
+			this.DeckListCopyBtn.TabIndex = 1;
+			this.DeckListCopyBtn.Text = "클립보드에 복사";
+			this.DeckListCopyBtn.UseVisualStyleBackColor = true;
+			// 
+			// DeckListSaveBtn
+			// 
+			this.DeckListSaveBtn.Location = new System.Drawing.Point(7, 25);
+			this.DeckListSaveBtn.Name = "DeckListSaveBtn";
+			this.DeckListSaveBtn.Size = new System.Drawing.Size(102, 23);
+			this.DeckListSaveBtn.TabIndex = 0;
+			this.DeckListSaveBtn.Text = "파일로 저장";
+			this.DeckListSaveBtn.UseVisualStyleBackColor = true;
+			this.DeckListSaveBtn.Click += new System.EventHandler(this.DeckListSaveBtn_Click);
 			// 
 			// DeckList
 			// 
@@ -198,48 +276,6 @@
 			this.DeckList.Name = "DeckList";
 			this.DeckList.Size = new System.Drawing.Size(180, 454);
 			this.DeckList.TabIndex = 0;
-			// 
-			// ApplyDeckListBtn
-			// 
-			this.ApplyDeckListBtn.Font = new System.Drawing.Font("굴림", 8F);
-			this.ApplyDeckListBtn.Location = new System.Drawing.Point(101, 485);
-			this.ApplyDeckListBtn.Name = "ApplyDeckListBtn";
-			this.ApplyDeckListBtn.Size = new System.Drawing.Size(85, 36);
-			this.ApplyDeckListBtn.TabIndex = 4;
-			this.ApplyDeckListBtn.Text = "덱리스트로";
-			this.ApplyDeckListBtn.UseVisualStyleBackColor = true;
-			this.ApplyDeckListBtn.Click += new System.EventHandler(this.ApplyDeckListBtn_Click);
-			// 
-			// AddCardNumComboBox
-			// 
-			this.AddCardNumComboBox.Font = new System.Drawing.Font("굴림", 13F);
-			this.AddCardNumComboBox.FormattingEnabled = true;
-			this.AddCardNumComboBox.Location = new System.Drawing.Point(7, 487);
-			this.AddCardNumComboBox.Name = "AddCardNumComboBox";
-			this.AddCardNumComboBox.Size = new System.Drawing.Size(88, 30);
-			this.AddCardNumComboBox.TabIndex = 5;
-			this.AddCardNumComboBox.Text = "수량";
-			// 
-			// RemoveCardNumComboBox
-			// 
-			this.RemoveCardNumComboBox.Font = new System.Drawing.Font("굴림", 13F);
-			this.RemoveCardNumComboBox.FormattingEnabled = true;
-			this.RemoveCardNumComboBox.Location = new System.Drawing.Point(6, 487);
-			this.RemoveCardNumComboBox.Name = "RemoveCardNumComboBox";
-			this.RemoveCardNumComboBox.Size = new System.Drawing.Size(88, 30);
-			this.RemoveCardNumComboBox.TabIndex = 6;
-			this.RemoveCardNumComboBox.Text = "수량";
-			// 
-			// RemoveDeckListCardBtn
-			// 
-			this.RemoveDeckListCardBtn.Font = new System.Drawing.Font("굴림", 8F);
-			this.RemoveDeckListCardBtn.Location = new System.Drawing.Point(100, 487);
-			this.RemoveDeckListCardBtn.Name = "RemoveDeckListCardBtn";
-			this.RemoveDeckListCardBtn.Size = new System.Drawing.Size(85, 36);
-			this.RemoveDeckListCardBtn.TabIndex = 6;
-			this.RemoveDeckListCardBtn.Text = "제거";
-			this.RemoveDeckListCardBtn.UseVisualStyleBackColor = true;
-			this.RemoveDeckListCardBtn.Click += new System.EventHandler(this.RemoveDeckListCardBtn_Click);
 			// 
 			// DeckBuilder
 			// 
@@ -253,11 +289,14 @@
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.DeckBuilder_FormClosed);
 			this.CardDatabaseGB.ResumeLayout(false);
 			this.ListCardImgGB.ResumeLayout(false);
+			this.ListCardImgGB.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ListCardImg)).EndInit();
 			this.CardOptionGB.ResumeLayout(false);
 			this.DeckBuilderGB.ResumeLayout(false);
 			this.DeckCardImgGB.ResumeLayout(false);
+			this.DeckCardImgGB.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.DeckCardImg)).EndInit();
+			this.DeckOptionGB.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -282,6 +321,9 @@
 		private System.Windows.Forms.Button ApplyDeckListBtn;
 		private System.Windows.Forms.Button RemoveDeckListCardBtn;
 		private System.Windows.Forms.ComboBox RemoveCardNumComboBox;
+		private System.Windows.Forms.Button DeckListCopyBtn;
+		private System.Windows.Forms.Button DeckListSaveBtn;
+		private System.Windows.Forms.Button LoadDeckListBtn;
 	}
 }
 

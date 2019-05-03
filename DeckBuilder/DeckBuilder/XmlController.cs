@@ -72,6 +72,27 @@ namespace DeckBuilder
 			}
 		}
 
+		public void SaveDeckList(String filePath)
+		{
+			XmlTextWriter writer = new XmlTextWriter(filePath.ToString(), Encoding.UTF8);
+			writer.Formatting = Formatting.Indented;
+			writer.WriteStartDocument();
+			writer.WriteStartElement("DeckList");
+
+			foreach (KeyValuePair<String, DeckCardData> cardData in m_DeckList)
+			{
+				writer.WriteStartElement("Card");
+				writer.WriteAttributeString("Name", cardData.Key);
+				writer.WriteAttributeString("Num", cardData.Value.GetCardNum().ToString());
+				writer.WriteEndElement();
+			}
+
+			writer.WriteEndElement();
+			writer.WriteEndDocument();
+			writer.Flush();
+			writer.Close();
+		}
+
 		public void LoadCardData()
 		{
 			if (Directory.Exists(m_cardDataDir) == false)
