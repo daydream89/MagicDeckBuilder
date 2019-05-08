@@ -242,18 +242,19 @@
 			// 
 			// LoadDeckListBtn
 			// 
-			this.LoadDeckListBtn.Location = new System.Drawing.Point(115, 24);
+			this.LoadDeckListBtn.Location = new System.Drawing.Point(115, 25);
 			this.LoadDeckListBtn.Name = "LoadDeckListBtn";
-			this.LoadDeckListBtn.Size = new System.Drawing.Size(75, 23);
+			this.LoadDeckListBtn.Size = new System.Drawing.Size(75, 25);
 			this.LoadDeckListBtn.TabIndex = 2;
 			this.LoadDeckListBtn.Text = "불러오기";
 			this.LoadDeckListBtn.UseVisualStyleBackColor = true;
+			this.LoadDeckListBtn.Click += new System.EventHandler(this.LoadDeckListBtn_Click);
 			// 
 			// DeckListCopyBtn
 			// 
-			this.DeckListCopyBtn.Location = new System.Drawing.Point(7, 54);
+			this.DeckListCopyBtn.Location = new System.Drawing.Point(7, 56);
 			this.DeckListCopyBtn.Name = "DeckListCopyBtn";
-			this.DeckListCopyBtn.Size = new System.Drawing.Size(183, 23);
+			this.DeckListCopyBtn.Size = new System.Drawing.Size(183, 25);
 			this.DeckListCopyBtn.TabIndex = 1;
 			this.DeckListCopyBtn.Text = "클립보드에 복사";
 			this.DeckListCopyBtn.UseVisualStyleBackColor = true;
@@ -262,7 +263,7 @@
 			// 
 			this.DeckListSaveBtn.Location = new System.Drawing.Point(7, 25);
 			this.DeckListSaveBtn.Name = "DeckListSaveBtn";
-			this.DeckListSaveBtn.Size = new System.Drawing.Size(102, 23);
+			this.DeckListSaveBtn.Size = new System.Drawing.Size(102, 25);
 			this.DeckListSaveBtn.TabIndex = 0;
 			this.DeckListSaveBtn.Text = "파일로 저장";
 			this.DeckListSaveBtn.UseVisualStyleBackColor = true;
@@ -276,6 +277,7 @@
 			this.DeckList.Name = "DeckList";
 			this.DeckList.Size = new System.Drawing.Size(180, 454);
 			this.DeckList.TabIndex = 0;
+			this.DeckList.SelectedIndexChanged += new System.EventHandler(this.DeckList_ItemSelected);
 			// 
 			// DeckBuilder
 			// 

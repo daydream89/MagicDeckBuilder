@@ -83,6 +83,7 @@ namespace DeckBuilder
 			{
 				writer.WriteStartElement("Card");
 				writer.WriteAttributeString("Name", cardData.Key);
+				writer.WriteAttributeString("Expansion", cardData.Value.GetCardData().GetCardSet());
 				writer.WriteAttributeString("Num", cardData.Value.GetCardNum().ToString());
 				writer.WriteEndElement();
 			}
@@ -150,6 +151,30 @@ namespace DeckBuilder
 
 					m_CardList[expansion].Add(cardData.GetCardName(), cardData);
 				}
+			}
+		}
+
+		public void LoadDeckList(String filePath)
+		{
+			if (File.Exists(filePath) == false)
+				return;
+
+			XmlDocument doc = new XmlDocument();
+			doc.Load(filePath.ToString());
+
+			foreach (XmlNode node in doc.DocumentElement.ChildNodes)
+			{
+				String name = node.Attributes["Name"].Value;
+				String expansionStr = node.Attributes["Expansion"].Value;
+				String numStr = node.Attributes["Num"].Value;
+
+				eExpansion expansion = GetExpansionEnumFromString(expansionStr);
+
+				DeckCardData cardData = new DeckCardData();
+				cardData.SetCardNum(Int32.Parse(numStr));
+				cardData.SetCardData(m_CardList[expansion][name]);
+
+				m_DeckList.Add(name, cardData);
 			}
 		}
 

@@ -199,6 +199,24 @@ namespace DeckBuilder
 			ListCardImg.Image = Image.FromFile(m_curSelectedCard.GetImagePath());
 		}
 
+		private void DeckList_ItemSelected(object sender, EventArgs e)
+		{
+			String itemStr = DeckList.SelectedItem as String;
+			String[] tok = itemStr.Split('\t');
+			if (tok[0] == null)
+				return;
+
+			String name = tok[0];
+			foreach (KeyValuePair<eExpansion, Dictionary<String, CardData>> cardList in m_CardList)
+			{
+				if (cardList.Value.ContainsKey(name))
+				{
+					DeckCardImg.Image = Image.FromFile(cardList.Value[name].GetImagePath());
+					break;
+				}
+			}
+		}
+
 		private void DeckBuilder_FormClosed(object sender, FormClosedEventArgs e)
 		{
 			SaveCardData();
@@ -281,6 +299,20 @@ namespace DeckBuilder
 			if (dialog.ShowDialog(this) == DialogResult.OK)
 			{
 				SaveDeckList(dialog.FileName);
+			}
+		}
+
+		private void LoadDeckListBtn_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog dialog = new OpenFileDialog();
+			dialog.InitialDirectory = Environment.CurrentDirectory;
+			dialog.AddExtension = true;
+			dialog.Filter = "xml 파일 (*.xml)|*.xml";
+
+			if (dialog.ShowDialog(this) == DialogResult.OK)
+			{
+				LoadDeckList(dialog.FileName);
+				RefreshDeckList();
 			}
 		}
 	}
