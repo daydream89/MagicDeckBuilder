@@ -6,13 +6,18 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 
 namespace DeckBuilder
 {
-	enum eExpansion
+	using ExpansionMap = Dictionary<eExpansion, int>;
+	using CardList = Dictionary<eExpansion, Dictionary<String, CardData>>;
+	using DeckList = Dictionary<String, DeckCardData>;
+
+	public enum eExpansion
 	{
 		XLN = 0,
 		RIX,
@@ -42,15 +47,14 @@ namespace DeckBuilder
 
 		private String m_cardDataDir;
 		private String m_cardImageDir;
-		private Dictionary<eExpansion, int> m_setStartIdList;
-		private Dictionary<eExpansion, int> m_cardSetNumList;
+		private ExpansionMap m_setStartIdList;
+		private ExpansionMap m_cardSetNumList;
 
-		private WebLibrary m_WebLibrary;
-		private Dictionary<eExpansion, Dictionary<String, CardData>> m_CardList;
+		private CardList m_CardList;
 		private Dictionary<String, DeckCardData> m_DeckList;
 		private CardData m_curSelectedCard;
 
-		private String GetFullNameFromExpansionEnum(eExpansion expansion)
+		public String GetFullNameFromExpansionEnum(eExpansion expansion)
 		{
 			switch (expansion)
 			{
@@ -64,7 +68,7 @@ namespace DeckBuilder
 			}
 		}
 
-		private eExpansion GetExpansionEnumFromString(String expansionName)
+		public eExpansion GetExpansionEnumFromString(String expansionName)
 		{
 			if (expansionName == "Ixalan" || expansionName == "XLN")
 				return eExpansion.XLN;
@@ -89,7 +93,6 @@ namespace DeckBuilder
 			// initialize member variables
 			m_setStartIdList = new Dictionary<eExpansion, int>();
 			m_cardSetNumList = new Dictionary<eExpansion, int>();
-			m_WebLibrary = new WebLibrary();
 			m_CardList = new Dictionary<eExpansion, Dictionary<string, CardData>>();
 			for (eExpansion expansion = eExpansion.XLN; expansion < eExpansion.EXPANSION_MAX; ++expansion)
 			{
@@ -106,6 +109,21 @@ namespace DeckBuilder
 
 			SetExpansionComboBox();
 			SetCardNumComboBox();
+		}
+
+		public ref readonly CardList GetCardList(eExpansion expansion)
+		{
+			return ref m_CardList;
+		}
+
+		public int GetStartCardID(eExpansion expansion)
+		{
+			return m_setStartIdList[expansion];
+		}
+
+		public int GetCardNum(eExpansion expansion)
+		{
+			return m_cardSetNumList[expansion];
 		}
 
 		private void SetExpansionComboBox()
@@ -130,40 +148,33 @@ namespace DeckBuilder
 			RemoveCardNumComboBox.SelectedIndex = 0;
 		}
 
-		public void CrawlingCard()
-		{
-			String expansionName = ExpansionComboBox.SelectedItem as String;
-			eExpansion expansion = GetExpansionEnumFromString(expansionName);
-			StringBuilder imagePath = new StringBuilder(m_cardImageDir);
-			imagePath.Append(expansionName);
-			imagePath.Append("\\");
-
-			int startCardId = m_setStartIdList[expansion];
-			for (int i = 0; i < m_cardSetNumList[expansion]; ++i)
-			{
-				int cardID = startCardId + i;
-				String strCardID = cardID.ToString();
-				String url = m_WebLibrary.MakeURL(strCardID);
-
-				HtmlDocument doc = m_WebLibrary.GetHTMLDocumentByURL(url);
-				CardData card = m_WebLibrary.MakeCardData(doc, imagePath.ToString(), strCardID);
-
-				if (m_CardList[expansion].ContainsKey(card.GetCardName()) == false)
-				{
-					if(File.Exists(imagePath.ToString()) == false)
-						m_WebLibrary.DownLoadCardImage(imagePath.ToString(), ref card);
-
-					m_CardList[expansion].Add(card.GetCardName(), card);
-				}
-
-				double progressRate = (double)m_CardList[expansion].Count / (double)m_cardSetNumList[expansion];
-				CardDataProgressBar.Value = (int)(progressRate * 100);
-			}
-		}
-
 		private void CrawlingCardBtn_Click(object sender, EventArgs e)
 		{
-			CrawlingCard();
+			String expansionName = ExpansionComboBox.SelectedItem as String;
+
+			BackgroundWorker backWorker = new BackgroundWorker();
+			backWorker.WorkerReportsProgress = true;
+
+			backWorker.DoWork += (_, args) =>
+			{
+				eExpansion expansion = GetExpansionEnumFromString(expansionName);
+				StringBuilder imagePath = new StringBuilder(m_cardImageDir);
+				imagePath.Append(expansionName);
+				imagePath.Append("\\");
+
+				var crawlingForm = new Form2(this, imagePath.ToString(), expansion, ref backWorker);
+				crawlingForm.Opacity = 0;
+				crawlingForm.ShowInTaskbar = false;
+			
+				Application.Run(crawlingForm);
+			};
+
+			backWorker.ProgressChanged += (_, args) =>
+			{
+				CardDataProgressBar.Value = (int)args.ProgressPercentage;
+			};
+
+			backWorker.RunWorkerAsync();
 		}
 
 		private void RefreshListBtn_Click(object sender, EventArgs e)
