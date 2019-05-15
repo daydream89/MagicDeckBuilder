@@ -111,7 +111,7 @@ namespace DeckBuilder
 			SetCardNumComboBox();
 		}
 
-		public ref readonly CardList GetCardList(eExpansion expansion)
+		public ref CardList GetCardList(eExpansion expansion)
 		{
 			return ref m_CardList;
 		}
@@ -151,30 +151,29 @@ namespace DeckBuilder
 		private void CrawlingCardBtn_Click(object sender, EventArgs e)
 		{
 			String expansionName = ExpansionComboBox.SelectedItem as String;
+			eExpansion expansion = GetExpansionEnumFromString(expansionName);
+			StringBuilder imagePath = new StringBuilder(m_cardImageDir);
+			imagePath.Append(expansionName);
+			imagePath.Append("\\");
 
-			BackgroundWorker backWorker = new BackgroundWorker();
-			backWorker.WorkerReportsProgress = true;
+			Thread backThread = new Thread(new ThreadStart(() => CreateBackWorker(expansion, imagePath.ToString())));
+			backThread.SetApartmentState(ApartmentState.STA);
+			backThread.Start();
+		}
 
-			backWorker.DoWork += (_, args) =>
-			{
-				eExpansion expansion = GetExpansionEnumFromString(expansionName);
-				StringBuilder imagePath = new StringBuilder(m_cardImageDir);
-				imagePath.Append(expansionName);
-				imagePath.Append("\\");
+		public void CreateBackWorker(eExpansion expansion, String imagePath)
+		{
+			String path = imagePath as String;
+			var crawlingForm = new Form2(this, path, expansion);
+			crawlingForm.Opacity = 0;
+			crawlingForm.ShowInTaskbar = false;
 
-				var crawlingForm = new Form2(this, imagePath.ToString(), expansion, ref backWorker);
-				crawlingForm.Opacity = 0;
-				crawlingForm.ShowInTaskbar = false;
-			
-				Application.Run(crawlingForm);
-			};
+			Application.Run(crawlingForm);
+		}
 
-			backWorker.ProgressChanged += (_, args) =>
-			{
-				CardDataProgressBar.Value = (int)args.ProgressPercentage;
-			};
-
-			backWorker.RunWorkerAsync();
+		public void UpdateProgressBar(int progress)
+		{
+			CardDataProgressBar.Value = progress;
 		}
 
 		private void RefreshListBtn_Click(object sender, EventArgs e)

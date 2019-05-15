@@ -17,7 +17,7 @@ namespace DeckBuilder
 	public partial class Form2 : Form
 	{
 		private DeckBuilder m_mainForm;
-		private BackgroundWorker m_backWorker;
+		//private BackgroundWorker m_backWorker;
 		private WebLibrary m_WebLibrary;
 		private String m_imagePath = "";
 		private eExpansion m_expansion = eExpansion.EXPANSION_MAX;
@@ -29,12 +29,11 @@ namespace DeckBuilder
 			InitializeComponent();
 		}
 
-		public Form2(DeckBuilder parent, String imagePath, eExpansion expansion, ref BackgroundWorker backWorker) 
+		public Form2(DeckBuilder parent, String imagePath, eExpansion expansion) 
 		{
 			InitializeComponent();
 
 			m_mainForm = parent;
-			m_backWorker = backWorker;
 
 			m_imagePath = imagePath;
 			m_expansion = expansion;
@@ -42,6 +41,8 @@ namespace DeckBuilder
 			m_WebLibrary = new WebLibrary();
 		}
 
+		// todo. progress 어떻게 전달하지...?
+		// event 써야 하나...?
 		private void Form2_Load(object sender, EventArgs e)
 		{
 			CardList cardList = m_mainForm.GetCardList(m_expansion);
@@ -54,7 +55,7 @@ namespace DeckBuilder
 				CrawlingCard(cardID, ref cardList);
 
 				double progressRate = (double)cardList[m_expansion].Count / (double)cardNum;
-				m_backWorker.ReportProgress((int)(progressRate * 100));
+				//m_mainForm.UpdateProgressBar((int)(progressRate * 100));
 			}
 		}
 
