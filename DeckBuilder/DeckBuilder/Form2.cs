@@ -19,7 +19,7 @@ namespace DeckBuilder
 		private DeckBuilder m_mainForm;
 		//private BackgroundWorker m_backWorker;
 		private WebLibrary m_WebLibrary;
-		private String m_imagePath = "";
+		private String m_imagePath;
 		private eExpansion m_expansion = eExpansion.EXPANSION_MAX;
 
 		private Form2()
@@ -54,7 +54,7 @@ namespace DeckBuilder
 				int cardID = startID + i;
 				CrawlingCard(cardID, ref cardList);
 
-				double progressRate = (double)cardList[m_expansion].Count / (double)cardNum;
+				double progressRate = (double)cardList[m_expansion].Count / cardNum;
 				//m_mainForm.UpdateProgressBar((int)(progressRate * 100));
 			}
 		}

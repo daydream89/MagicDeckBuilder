@@ -62,15 +62,9 @@ namespace DeckBuilder
 
 		public CardData()
 		{
-			cardID = "";
-			cardName = "";
 			manaCost = new Dictionary<ManaType, int>();
-			convertedManaCost = 0;
 			types = new List<String>();
-			text = "";
-			cardSet = "";
 			rarity = Rarity.RARITY_NONE;
-			imagePath = "";
 			isSubCardExist = false;
 		}
 
@@ -116,7 +110,7 @@ namespace DeckBuilder
 			List<String> typeList = new List<string>();
 			String seperator = " -";
 			String[] tokStr = typeStr.Split(seperator.ToCharArray());
-			foreach (String str in tokStr)
+			foreach (var str in tokStr)
 				typeList.Add(str);
 			
 			return typeList;
@@ -138,7 +132,7 @@ namespace DeckBuilder
 
 		private void ConvertStringListToManaCost(List<String> costList, ref Dictionary<ManaType, int> mana)
 		{
-			foreach(String str in costList)
+			foreach(var str in costList)
 			{
 				String strLower = str.ToLower();
 				int cost = 1;

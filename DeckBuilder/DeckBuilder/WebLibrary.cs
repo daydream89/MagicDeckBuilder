@@ -104,7 +104,7 @@ namespace DeckBuilder
 					String[] textList = text.Split(' ');
 
 					List<String> manaCostList = new List<string>();
-					foreach (String str in textList)
+					foreach (var str in textList)
 					{
 						if (str.Contains("alt=") == true)
 						{
@@ -146,8 +146,8 @@ namespace DeckBuilder
 			url.Append(card.GetCardID());
 			url.Append("&type=card");
 
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url.ToString());
-			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+			HttpWebRequest request = WebRequest.Create(url.ToString()) as HttpWebRequest;
+			HttpWebResponse response = request.GetResponse() as HttpWebResponse;
 			bool bImage = response.ContentType.StartsWith("image", StringComparison.OrdinalIgnoreCase);
 			if ((response.StatusCode == HttpStatusCode.OK ||
 				response.StatusCode == HttpStatusCode.Moved ||

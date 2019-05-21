@@ -19,7 +19,7 @@ namespace DeckBuilder
 			if (Directory.Exists(m_cardDataDir) == false)
 				Directory.CreateDirectory(m_cardDataDir);
 
-			foreach (KeyValuePair<eExpansion, Dictionary<String, CardData>> cardList in m_CardList)
+			foreach (var cardList in m_CardList)
 			{
 				String expansion = cardList.Key.ToString();
 				StringBuilder filePath = new StringBuilder(m_cardDataDir);
@@ -31,11 +31,11 @@ namespace DeckBuilder
 				writer.WriteStartDocument();
 				writer.WriteStartElement("CardList");
 
-				foreach (KeyValuePair<String, CardData> card in cardList.Value)
+				foreach (var card in cardList.Value)
 				{
 					Dictionary<ManaType, int> cost = card.Value.GetManaCost();
 					StringBuilder strMana = new StringBuilder();
-					for (ManaType type = 0; type < ManaType.MANA_TYPE_MAX; ++type)
+					for (ManaType type = ManaType.COMMON; type < ManaType.MANA_TYPE_MAX; ++type)
 					{
 						if (cost.ContainsKey(type))
 							strMana.Append(cost[type].ToString());
@@ -45,7 +45,7 @@ namespace DeckBuilder
 
 					List<String> typeList = card.Value.GetCardTypes();
 					StringBuilder strTypes = new StringBuilder();
-					foreach (String type in typeList)
+					foreach (var type in typeList)
 					{
 						strTypes.Append(type);
 						if(typeList.Last() != type)
@@ -79,7 +79,7 @@ namespace DeckBuilder
 			writer.WriteStartDocument();
 			writer.WriteStartElement("DeckList");
 
-			foreach (KeyValuePair<String, DeckCardData> cardData in m_DeckList)
+			foreach (var cardData in m_DeckList)
 			{
 				writer.WriteStartElement("Card");
 				writer.WriteAttributeString("Name", cardData.Key);
@@ -111,11 +111,11 @@ namespace DeckBuilder
 				XmlDocument doc = new XmlDocument();
 				doc.Load(filePath.ToString());
 
+				StringBuilder value = new StringBuilder();
 				foreach (XmlNode node in doc.DocumentElement.ChildNodes)
 				{
 					CardData cardData = new CardData();
 					cardData.SetCardSet(expansion.ToString());
-					StringBuilder value = new StringBuilder();
 
 					value.Append(node.Attributes["ID"].Value);
 					cardData.SetCardID(value.ToString());

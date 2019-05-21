@@ -185,9 +185,9 @@ namespace DeckBuilder
 		{
 			CardListBox.Items.Clear();
 
-			foreach (KeyValuePair<eExpansion, Dictionary<String, CardData>> cardList in m_CardList)
+			foreach (var cardList in m_CardList)
 			{
-				foreach (KeyValuePair<String, CardData> card in cardList.Value)
+				foreach (var card in cardList.Value)
 				{
 					CardListBox.Items.Add(card.Key);
 				}
@@ -197,7 +197,7 @@ namespace DeckBuilder
 		private void CardListBox_ItemSelected(object sender, EventArgs e)
 		{
 			String name = CardListBox.SelectedItem as String;
-			foreach (KeyValuePair<eExpansion, Dictionary<String, CardData>> cardList in m_CardList)
+			foreach (var cardList in m_CardList)
 			{
 				if (cardList.Value.ContainsKey(name))
 				{
@@ -217,7 +217,7 @@ namespace DeckBuilder
 				return;
 
 			String name = tok[0];
-			foreach (KeyValuePair<eExpansion, Dictionary<String, CardData>> cardList in m_CardList)
+			foreach (var cardList in m_CardList)
 			{
 				if (cardList.Value.ContainsKey(name))
 				{
@@ -265,10 +265,10 @@ namespace DeckBuilder
 		// todo. 휠로 카드 수 증감할 수 있도록 수정
 		private void RemoveDeckListCardBtn_Click(object sender, EventArgs e)
 		{
-			if (DeckList.SelectedItem == null || RemoveCardNumComboBox.SelectedIndex == 0)
+			if (RemoveCardNumComboBox.SelectedIndex == 0)
 				return;
 
-			String text = DeckList.SelectedItem as String;
+			String text = DeckList.SelectedItem?.ToString();
 			String[] tok = text.Split('\t');
 			if (tok[1] == null)
 				return;
@@ -295,7 +295,7 @@ namespace DeckBuilder
 		private void RefreshDeckList()
 		{
 			DeckList.Items.Clear();
-			foreach (KeyValuePair<String, DeckCardData> cardData in m_DeckList)
+			foreach (var cardData in m_DeckList)
 				DeckList.Items.Add(cardData.Key + "\t" + cardData.Value.GetCardNum().ToString());
 		}
 
